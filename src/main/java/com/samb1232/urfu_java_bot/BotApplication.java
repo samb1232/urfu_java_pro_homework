@@ -4,8 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BotMain {
+public class BotApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(BotMain.class, args);
+		SpringApplication.run(BotApplication.class, args);
 	}
 }

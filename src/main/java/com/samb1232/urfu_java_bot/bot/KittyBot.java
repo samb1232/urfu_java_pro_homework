@@ -2,10 +2,6 @@ package com.samb1232.urfu_java_bot.bot;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -31,6 +27,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.samb1232.urfu_java_bot.interfaces.ImageStorageService;
+
 @Component
 public class KittyBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(KittyBot.class);
@@ -39,17 +37,14 @@ public class KittyBot extends TelegramLongPollingBot {
     private static final String NEXT_IMAGE_CALLBACK = "next_image";
     private static final String BACK_TO_START_CALLBACK = "back_to_start";
     
-    private final Map<Long, List<String>> userImages = new ConcurrentHashMap<>();
     private final Map<Long, Integer> userImageIndex = new ConcurrentHashMap<>();
-    private final String imageStoragePath = "user_images/";
+    private final ImageStorageService imageStorageService;
 
-    public KittyBot(@Value("${bot.token}") String botToken) {
+    public KittyBot(
+            @Value("${bot.token}") String botToken,
+            ImageStorageService imageStorageService) {
         super(botToken);
-        try {
-            Files.createDirectories(Paths.get(imageStoragePath));
-        } catch (IOException e) {
-            LOGGER.error("Error creating image storage directory", e);
-        }
+        this.imageStorageService = imageStorageService;
     }
 
     @Override
@@ -96,20 +91,15 @@ public class KittyBot extends TelegramLongPollingBot {
 
         try {
             String fileId = largestPhoto.getFileId();
-            org.telegram.telegrambots.meta.api.objects.File file = execute(org.telegram.telegrambots.meta.api.methods.GetFile.builder()
+            org.telegram.telegrambots.meta.api.objects.File file = execute(
+                org.telegram.telegrambots.meta.api.methods.GetFile.builder()
                     .fileId(fileId)
                     .build());
             
-            java.io.File imageFile = downloadFile(file);
-            Path userDir = Paths.get(imageStoragePath + chatId);
-            Files.createDirectories(userDir);
-            
-            Path destination = userDir.resolve(fileId + ".jpg");
-            Files.copy(imageFile.toPath(), destination, StandardCopyOption.REPLACE_EXISTING);
-            
-            userImages.computeIfAbsent(chatId, _ -> new ArrayList<>()).add(destination.toString());
+            File imageFile = downloadFile(file);
+            imageStorageService.saveImage(chatId, imageFile, fileId);
             sendMessage(chatId, "Изображение успешно сохранено!");
-        } catch (TelegramApiException | IOException e) {
+        } catch (IOException | TelegramApiException e) {
             LOGGER.error("Error saving image", e);
             sendMessage(chatId, "Ошибка при сохранении изображения");
         }
@@ -134,7 +124,7 @@ public class KittyBot extends TelegramLongPollingBot {
     }
 
     private void showUserImages(Long chatId, Integer messageId) {
-        List<String> images = userImages.getOrDefault(chatId, Collections.emptyList());
+        List<String> images = imageStorageService.getUserImages(chatId);
         if (images.isEmpty()) {
             sendMessage(chatId, "У вас пока нет сохраненных изображений");
             return;
@@ -146,7 +136,7 @@ public class KittyBot extends TelegramLongPollingBot {
 
     private void showNextImage(Long chatId, Integer messageId) {
         int currentIndex = userImageIndex.getOrDefault(chatId, 0) + 1;
-        List<String> images = userImages.get(chatId);
+        List<String> images = imageStorageService.getUserImages(chatId);
         
         if (currentIndex >= images.size()) {
             currentIndex = 0;
@@ -162,7 +152,7 @@ public class KittyBot extends TelegramLongPollingBot {
             
             SendPhoto photo = new SendPhoto();
             photo.setChatId(chatId.toString());
-            photo.setPhoto(new InputFile(new File(userImages.get(chatId).get(index))));
+            photo.setPhoto(new InputFile(imageStorageService.getImagePath(chatId, index).toFile()));
             
             List<InlineKeyboardButton> buttons = new ArrayList<>();
             if (total > 1) {

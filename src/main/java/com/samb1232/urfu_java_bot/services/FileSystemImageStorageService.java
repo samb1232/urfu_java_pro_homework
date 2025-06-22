@@ -16,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.samb1232.urfu_java_bot.interfaces.ImageStorageService;
-
 @Service
 public class FileSystemImageStorageService implements ImageStorageService {
     private static final Logger LOGGER = LoggerFactory.getLogger(FileSystemImageStorageService.class);

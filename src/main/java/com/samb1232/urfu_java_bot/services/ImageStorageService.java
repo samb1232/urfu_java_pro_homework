@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.interfaces;
+package com.samb1232.urfu_java_bot.services;
 
 import java.io.File;
 import java.io.IOException;

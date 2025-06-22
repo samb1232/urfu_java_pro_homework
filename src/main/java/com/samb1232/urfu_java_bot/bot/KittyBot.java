@@ -24,7 +24,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import com.samb1232.urfu_java_bot.bot.keyboards.InlineKeyboardFactory;
-import com.samb1232.urfu_java_bot.interfaces.ImageStorageService;
+import com.samb1232.urfu_java_bot.services.ImageStorageService;
 
 @Component
 public class KittyBot extends TelegramLongPollingBot {

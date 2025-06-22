@@ -2,8 +2,6 @@ package com.samb1232.urfu_java_bot.bot;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -23,19 +21,15 @@ import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.samb1232.urfu_java_bot.bot.keyboards.InlineKeyboardFactory;
 import com.samb1232.urfu_java_bot.interfaces.ImageStorageService;
 
 @Component
 public class KittyBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(KittyBot.class);
     private static final String START_COMMAND = "/start";
-    private static final String VIEW_IMAGES_CALLBACK = "view_images";
-    private static final String NEXT_IMAGE_CALLBACK = "next_image";
-    private static final String BACK_TO_START_CALLBACK = "back_to_start";
     
     private final Map<Long, Integer> userImageIndex = new ConcurrentHashMap<>();
     private final ImageStorageService imageStorageService;
@@ -71,9 +65,9 @@ public class KittyBot extends TelegramLongPollingBot {
         Integer messageId = callbackQuery.getMessage().getMessageId();
 
         switch (data) {
-            case VIEW_IMAGES_CALLBACK -> showUserImages(chatId, messageId);
-            case NEXT_IMAGE_CALLBACK -> showNextImage(chatId, messageId);
-            case BACK_TO_START_CALLBACK -> returnToStartMenu(chatId, messageId);
+            case CallbackData.VIEW_IMAGES_CALLBACK -> showUserImages(chatId, messageId);
+            case CallbackData.NEXT_IMAGE_CALLBACK -> showNextImage(chatId, messageId);
+            case CallbackData.BACK_TO_START_CALLBACK -> returnToStartMenu(chatId, messageId);
         }
 
         answerCallbackQuery(callbackQuery.getId());
@@ -110,15 +104,7 @@ public class KittyBot extends TelegramLongPollingBot {
         message.setChatId(chatId.toString());
         message.setText("Добро пожаловать! Отправьте мне изображение или просмотрите сохраненные.");
 
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        List<InlineKeyboardButton> row = Collections.singletonList(
-                InlineKeyboardButton.builder()
-                        .text("Посмотреть мои картинки")
-                        .callbackData(VIEW_IMAGES_CALLBACK)
-                        .build()
-        );
-        keyboard.setKeyboard(Collections.singletonList(row));
-        message.setReplyMarkup(keyboard);
+        message.setReplyMarkup(InlineKeyboardFactory.createStartMenuKeyboard());
 
         executeMessage(message);
     }
@@ -154,22 +140,9 @@ public class KittyBot extends TelegramLongPollingBot {
             photo.setChatId(chatId.toString());
             photo.setPhoto(new InputFile(imageStorageService.getImagePath(chatId, index).toFile()));
             
-            List<InlineKeyboardButton> buttons = new ArrayList<>();
-            if (total > 1) {
-                buttons.add(InlineKeyboardButton.builder()
-                        .text("Далее (" + (index+1) + "/" + total + ")")
-                        .callbackData(NEXT_IMAGE_CALLBACK)
-                        .build());
-            }
-            
-            buttons.add(InlineKeyboardButton.builder()
-                    .text("Назад")
-                    .callbackData(BACK_TO_START_CALLBACK)
-                    .build());
-            
-            InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-            keyboard.setKeyboard(Collections.singletonList(buttons));
-            photo.setReplyMarkup(keyboard);
+            photo.setReplyMarkup(
+                InlineKeyboardFactory.createImageNavigationKeyboard(index, total)
+            );
             
             execute(photo);
         } catch (TelegramApiException e) {

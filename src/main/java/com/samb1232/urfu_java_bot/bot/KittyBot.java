@@ -1,8 +1,5 @@
 package com.samb1232.urfu_java_bot.bot;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,18 +15,19 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.samb1232.urfu_java_bot.bot.handlers.MessageHandler;
+import com.samb1232.urfu_java_bot.bot.handlers.StartMenuHandler;
 import com.samb1232.urfu_java_bot.bot.keyboards.InlineKeyboardFactory;
 import com.samb1232.urfu_java_bot.services.ImageStorageService;
 
 @Component
 public class KittyBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(KittyBot.class);
-    private static final String START_COMMAND = "/start";
+
+    private final MessageHandler messageHandler;
     
     private final Map<Long, Integer> userImageIndex = new ConcurrentHashMap<>();
     private final ImageStorageService imageStorageService;
@@ -39,24 +37,24 @@ public class KittyBot extends TelegramLongPollingBot {
             ImageStorageService imageStorageService) {
         super(botToken);
         this.imageStorageService = imageStorageService;
+        TelegramService telegramService = new TelegramService(this);
+        StartMenuHandler startMenuHandler = new StartMenuHandler(telegramService);
+
+        this.messageHandler = new MessageHandler(imageStorageService, startMenuHandler, telegramService);
     }
 
     @Override
     public void onUpdateReceived(Update update) {
-        if (update.hasCallbackQuery()) {
-            handleCallbackQuery(update.getCallbackQuery());
-        } else if (update.hasMessage()) {
-            handleMessage(update.getMessage());
+        try {
+            if (update.hasCallbackQuery()) {
+                handleCallbackQuery(update.getCallbackQuery());
+            } else if (update.hasMessage()) {
+                messageHandler.handle(update);
+            }
+        } catch (TelegramApiException e) {
+            LOGGER.error("Error handling update", e);
         }
-    }
-
-    private void handleMessage(Message message) {
-        Long chatId = message.getChatId();
-        if (message.isCommand() && message.getText().equals(START_COMMAND)) {
-            sendStartMenu(chatId);
-        } else if (message.hasPhoto()) {
-            saveUserImage(chatId, message.getPhoto());
-        }
+        
     }
 
     private void handleCallbackQuery(CallbackQuery callbackQuery) {
@@ -71,32 +69,6 @@ public class KittyBot extends TelegramLongPollingBot {
         }
 
         answerCallbackQuery(callbackQuery.getId());
-    }
-
-    private void saveUserImage(Long chatId, List<PhotoSize> photos) {
-        PhotoSize largestPhoto = photos.stream()
-                .max(Comparator.comparing(PhotoSize::getFileSize))
-                .orElse(null);
-
-        if (largestPhoto == null) {
-            sendMessage(chatId, "Ошибка при обработке изображения");
-            return;
-        }
-
-        try {
-            String fileId = largestPhoto.getFileId();
-            org.telegram.telegrambots.meta.api.objects.File file = execute(
-                org.telegram.telegrambots.meta.api.methods.GetFile.builder()
-                    .fileId(fileId)
-                    .build());
-            
-            File imageFile = downloadFile(file);
-            imageStorageService.saveImage(chatId, imageFile, fileId);
-            sendMessage(chatId, "Изображение успешно сохранено!");
-        } catch (IOException | TelegramApiException e) {
-            LOGGER.error("Error saving image", e);
-            sendMessage(chatId, "Ошибка при сохранении изображения");
-        }
     }
 
     private void sendStartMenu(Long chatId) {

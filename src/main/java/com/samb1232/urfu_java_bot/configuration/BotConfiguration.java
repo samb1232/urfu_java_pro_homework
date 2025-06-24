@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.tg_bot.configuration;
+package com.samb1232.urfu_java_bot.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

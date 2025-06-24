@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.bot;
+package com.samb1232.urfu_java_bot.tg_bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,11 +11,11 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
-public class KittyBot extends TelegramLongPollingBot {
+public class MainBot extends TelegramLongPollingBot {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KittyBot.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(MainBot.class);
 
-    public KittyBot(@Value("${bot.token}")String botToken) {
+    public MainBot(@Value("${bot.token}")String botToken) {
         super(botToken);
     }
 

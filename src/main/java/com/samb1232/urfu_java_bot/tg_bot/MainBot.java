@@ -5,17 +5,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import com.samb1232.urfu_java_bot.tg_bot.handlers.MessageHandler;
 
 @Component
 public class MainBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainBot.class);
     private final TelegramApiService telegramApiService;
+    private final MessageHandler messageHandler;
 
     public MainBot(@Value("${bot.token}") String botToken) {
         super(botToken);
         this.telegramApiService = new TelegramApiService(this);
+        this.messageHandler = new MessageHandler(telegramApiService);
     }
 
     @Override
@@ -23,14 +26,7 @@ public class MainBot extends TelegramLongPollingBot {
         if (!update.hasMessage() || !update.getMessage().hasText()) {
             return;
         }
-        Message msg = update.getMessage();
-        sendEchoMessage(msg);
-    }
-
-    private void sendEchoMessage(Message msg) {
-        var messageText = msg.getText();
-        var chatId = msg.getChatId();
-        telegramApiService.sendMessage(chatId, messageText);
+        messageHandler.handleTextMessage(update.getMessage());
     }
 
     @Override

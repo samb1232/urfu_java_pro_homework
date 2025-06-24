@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 
-public class MessageHandler {
+public class MessageHandler implements UpdateHandler{
     private static final Logger LOGGER = LoggerFactory.getLogger(MessageHandler.class);
     private final TelegramApiService telegramApiService;
 
@@ -14,7 +14,8 @@ public class MessageHandler {
         this.telegramApiService = telegramApiService;
     }
 
-    public void handleMessage(Message message) {
+    @Override
+    public void handle(Message message) {
         LOGGER.debug("Handling message");
         if (!message.hasText()) {
             return;

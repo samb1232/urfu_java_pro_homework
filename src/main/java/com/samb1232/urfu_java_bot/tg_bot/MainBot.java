@@ -31,10 +31,10 @@ public class MainBot extends TelegramLongPollingBot {
         
         Message message = update.getMessage();
         if (message.isCommand()) {
-            commandHandler.handleCommand(message);
+            commandHandler.handle(message);
         }
         else {
-            messageHandler.handleMessage(message);
+            messageHandler.handle(message);
         }
         
         

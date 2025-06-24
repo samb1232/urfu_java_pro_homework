@@ -4,14 +4,15 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 
-public class CommandHandler {
+public class CommandHandler implements UpdateHandler {
     private final TelegramApiService telegramApiService;
 
     public CommandHandler(TelegramApiService telegramApiService) {
         this.telegramApiService = telegramApiService;
     }
 
-    public void handleCommand(Message message) {
+    @Override
+    public void handle(Message message) {
         String command = message.getText();
 
         switch (command) {

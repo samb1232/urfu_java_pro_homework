@@ -4,7 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import com.samb1232.urfu_java_bot.dto.UserMessage;
 
 
 public class TelegramApiService {
@@ -24,5 +27,12 @@ public class TelegramApiService {
         } catch (TelegramApiException e) {
             LOGGER.error("Error sending message", e);
         }
+    }
+    
+    public static UserMessage toUserMessage(Message message) {
+        return new UserMessage(
+            message.getChatId(),
+            message.getText()
+        );
     }
 }

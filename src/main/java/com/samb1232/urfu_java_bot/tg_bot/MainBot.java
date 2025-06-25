@@ -5,11 +5,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.CommandHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.MessageHandler;
+import com.samb1232.urfu_java_bot.utils.TelegramMessageUtils;
 
 @Component
 public class MainBot extends TelegramLongPollingBot {
@@ -29,8 +30,8 @@ public class MainBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         LOGGER.debug("Update recieved");
         
-        Message message = update.getMessage();
-        if (message.isCommand()) {
+        UserMessage message = TelegramApiService.toUserMessage(update.getMessage());
+        if (TelegramMessageUtils.isCommand(message)) {
             commandHandler.handle(message);
         }
         else {

@@ -70,7 +70,7 @@ public class DBService {
         if (userOpt.isEmpty()) {
             User newUser = new User();
             newUser.setUserId(userId);
-            newUser.setName(formatUserName(telegramUser));
+            newUser.setName(telegramUser.getFirstName());
             return userRepository.save(newUser);
         }
         return userOpt.get();

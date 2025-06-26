@@ -10,20 +10,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import com.samb1232.urfu_java_bot.database.DBService;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.CommandHandler;
-import com.samb1232.urfu_java_bot.tg_bot.handlers.MessageHandler;
 import com.samb1232.urfu_java_bot.utils.TelegramMessageUtils;
 
 @Component
 public class MainBot extends TelegramLongPollingBot {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainBot.class);
     private final TelegramApiService telegramApiService;
-    private final MessageHandler messageHandler;
     private final CommandHandler commandHandler;
 
     public MainBot(@Value("${bot.token}") String botToken, DBService dbService) {
         super(botToken);
         this.telegramApiService = new TelegramApiService(this);
-        this.messageHandler = new MessageHandler(telegramApiService);
         this.commandHandler = new CommandHandler(telegramApiService, dbService);
     }
 
@@ -34,9 +31,6 @@ public class MainBot extends TelegramLongPollingBot {
         UserMessage message = TelegramApiService.toUserMessage(update.getMessage());
         if (TelegramMessageUtils.isCommand(message)) {
             commandHandler.handle(message);
-        }
-        else {
-            messageHandler.handle(message);
         }
         
         

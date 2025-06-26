@@ -33,3 +33,10 @@ build/
 .vscode/
 
 application.properties
+
+*.jpg
+*.png
+
+*.txt
+
+

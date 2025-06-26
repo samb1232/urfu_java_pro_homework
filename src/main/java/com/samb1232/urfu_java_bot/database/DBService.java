@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.database.entities.Cat;
 import com.samb1232.urfu_java_bot.database.entities.User;
 import com.samb1232.urfu_java_bot.database.repos.CatRepository;
@@ -79,17 +78,5 @@ public class DBService {
     public User getUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
-    }
-
-    private String formatUserName(TGUser user) {
-        if (user.getUserName() != null && !user.getUserName().isEmpty()) {
-            return user.getUserName();
-        }
-        
-        String name = user.getFirstName();
-        if (user.getLastName() != null) {
-            name += " " + user.getLastName();
-        }
-        return name != null ? name : TextFields.ANON_USER_TEXT;
     }
 }

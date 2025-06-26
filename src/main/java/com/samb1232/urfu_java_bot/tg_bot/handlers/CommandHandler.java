@@ -1,7 +1,7 @@
 package com.samb1232.urfu_java_bot.tg_bot.handlers;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
-
+import com.samb1232.urfu_java_bot.constants.TextFields;
+import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 
 public class CommandHandler implements UpdateHandler {
@@ -12,7 +12,7 @@ public class CommandHandler implements UpdateHandler {
     }
 
     @Override
-    public void handle(Message message) {
+    public void handle(UserMessage message) {
         String command = message.getText();
 
         switch (command) {
@@ -21,13 +21,13 @@ public class CommandHandler implements UpdateHandler {
         }
     }
 
-    private void processStartCommand(Message message) {
+    private void processStartCommand(UserMessage message) {
         Long chatId = message.getChatId();
-        telegramApiService.sendMessage(chatId, "Привет!");
+        telegramApiService.sendMessage(chatId, TextFields.HELLO_MESSAGE_TEXT);
     }
 
-    private void processUnknownCommand(Message message) {
+    private void processUnknownCommand(UserMessage message) {
         Long chatId = message.getChatId();
-        telegramApiService.sendMessage(chatId, "Неизвестная команда");
+        telegramApiService.sendMessage(chatId, TextFields.UNKNOWN_COMMAND_TEXT);
     }
 }

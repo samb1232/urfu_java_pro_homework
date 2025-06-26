@@ -1,7 +1,8 @@
 package com.samb1232.urfu_java_bot.tg_bot.handlers;
 
-import org.telegram.telegrambots.meta.api.objects.Message;
+import com.samb1232.urfu_java_bot.dto.UserMessage;
+
 
 public interface UpdateHandler {
-    public abstract void handle(Message message);
+    public abstract void handle(UserMessage message);
 }

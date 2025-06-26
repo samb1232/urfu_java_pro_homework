@@ -2,8 +2,8 @@ package com.samb1232.urfu_java_bot.tg_bot.handlers;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.meta.api.objects.Message;
 
+import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 
 public class MessageHandler implements UpdateHandler{
@@ -15,13 +15,13 @@ public class MessageHandler implements UpdateHandler{
     }
 
     @Override
-    public void handle(Message message) {
+    public void handle(UserMessage message) {
         LOGGER.debug("Handling message");
-        if (!message.hasText()) {
+        String messageText = message.getText();
+        if (messageText.isEmpty()) {
             return;
         }
         
-        String messageText = message.getText();
         Long chatId = message.getChatId();
         telegramApiService.sendMessage(chatId, messageText);
     }

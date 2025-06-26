@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import com.samb1232.urfu_java_bot.database.DBService;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.CommandHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.MessageHandler;
@@ -19,11 +20,11 @@ public class MainBot extends TelegramLongPollingBot {
     private final MessageHandler messageHandler;
     private final CommandHandler commandHandler;
 
-    public MainBot(@Value("${bot.token}") String botToken) {
+    public MainBot(@Value("${bot.token}") String botToken, DBService dbService) {
         super(botToken);
         this.telegramApiService = new TelegramApiService(this);
         this.messageHandler = new MessageHandler(telegramApiService);
-        this.commandHandler = new CommandHandler(telegramApiService);
+        this.commandHandler = new CommandHandler(telegramApiService, dbService);
     }
 
     @Override

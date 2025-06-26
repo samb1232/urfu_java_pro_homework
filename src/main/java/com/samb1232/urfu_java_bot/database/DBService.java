@@ -1,6 +1,7 @@
 package com.samb1232.urfu_java_bot.database;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,8 +11,10 @@ import com.samb1232.urfu_java_bot.database.entities.Cat;
 import com.samb1232.urfu_java_bot.database.entities.User;
 import com.samb1232.urfu_java_bot.database.repos.CatRepository;
 import com.samb1232.urfu_java_bot.database.repos.UserRepository;
+import com.samb1232.urfu_java_bot.dto.TGUser;
 
 import jakarta.persistence.EntityNotFoundException;
+
 
 @Service
 public class DBService {
@@ -24,10 +27,9 @@ public class DBService {
         this.userRepository = userRepository;
     }
 
+    @Transactional
     public Cat createCat(Long userId, String photoPath) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-        
+        User user = getUserById(userId);
         Cat cat = new Cat();
         cat.setUser(user);
         cat.setPhotoPath(photoPath);
@@ -56,5 +58,37 @@ public class DBService {
     @Transactional
     public void dislikeCat(Long catId) {
         catRepository.incrementDislikes(catId);
+    }
+
+    @Transactional
+    public User getOrCreateUser(TGUser telegramUser) {
+        Long userId = telegramUser.getId();
+        
+        Optional<User> userOpt = userRepository.findByUserId(userId);
+
+        if (userOpt.isEmpty()) {
+            User newUser = new User();
+            newUser.setUserId(userId);
+            newUser.setName(formatUserName(telegramUser));
+            return userRepository.save(newUser);
+        }
+        return userOpt.get();
+    }
+
+    public User getUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    }
+
+    private String formatUserName(TGUser user) {
+        if (user.getUserName() != null && !user.getUserName().isEmpty()) {
+            return user.getUserName();
+        }
+        
+        String name = user.getFirstName();
+        if (user.getLastName() != null) {
+            name += " " + user.getLastName();
+        }
+        return name != null ? name : "Аноним";
     }
 }

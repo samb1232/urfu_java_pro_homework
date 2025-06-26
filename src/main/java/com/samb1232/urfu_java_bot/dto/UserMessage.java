@@ -1,13 +1,14 @@
 package com.samb1232.urfu_java_bot.dto;
 
-
 public class UserMessage {
     private final long chatId;
     private final String text;
+    private final TGUser tgUser;
     
-    public UserMessage(long chatId, String text) {
+    public UserMessage(long chatId, String text, TGUser tgUser) {
         this.chatId = chatId;
         this.text = text;
+        this.tgUser = tgUser;
     }
     
     public long getChatId() {
@@ -18,4 +19,7 @@ public class UserMessage {
         return text;
     }
     
+    public TGUser getTGUser() {
+        return tgUser;
+    }
 }

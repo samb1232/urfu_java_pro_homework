@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+application.properties
+
+*.jpg
+*.png
+
+*.txt
+
+

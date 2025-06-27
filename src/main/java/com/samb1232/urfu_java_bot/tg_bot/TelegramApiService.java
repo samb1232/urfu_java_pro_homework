@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import com.samb1232.urfu_java_bot.dto.TGUser;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 
 
@@ -29,10 +31,23 @@ public class TelegramApiService {
         }
     }
     
-    public static UserMessage toUserMessage(Message message) {
-        return new UserMessage(
-            message.getChatId(),
-            message.getText()
+    public static UserMessage toUserMessage(Message telegramMessage) {
+        if (telegramMessage == null) {
+            return null;
+        }
+        
+        User telegramUser = telegramMessage.getFrom();
+        TGUser user = new TGUser(
+            telegramUser.getId(),
+            telegramUser.getUserName(),
+            telegramUser.getFirstName(),
+            telegramUser.getLastName()
         );
-    }
+        
+        return new UserMessage(
+            telegramMessage.getChatId(),
+            telegramMessage.getText(),
+            user
+        );
+    }   
 }

@@ -6,8 +6,10 @@ import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.database.DBService;
 import com.samb1232.urfu_java_bot.database.entities.User;
 import com.samb1232.urfu_java_bot.dto.TGUser;
+import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
+import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
@@ -15,16 +17,20 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 public class CommandHandler implements UpdateHandler {
     private final TelegramApiService telegramApiService;
     private final DBService dbService;
+    private final KeyboardFactory keyboardFactory;
 
     public CommandHandler(
         TelegramApiService telegramApiService, 
-        DBService dbService) {
+        DBService dbService,
+        KeyboardFactory keyboardFactory) {
         this.telegramApiService = telegramApiService;
         this.dbService = dbService;
+        this.keyboardFactory = keyboardFactory;
     }
 
     @Override
-    public void handle(UserMessage message, StateMachine<BotState, BotEvent> stateMachine) {
+    public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
+        UserMessage message = updateInfo.getUserMessage();
         String command = message.getText();
 
         switch (command) {
@@ -40,7 +46,8 @@ public class CommandHandler implements UpdateHandler {
         User user = dbService.getOrCreateUser(tgUser);
         
         telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, user.getName()));
-        telegramApiService.sendMessage(chatId, TextFields.MAIN_MENU_TEXT);
+
+        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, keyboardFactory.createMainMenuKeyboard());
     }
 
     private void processUnknownCommand(UserMessage message) {

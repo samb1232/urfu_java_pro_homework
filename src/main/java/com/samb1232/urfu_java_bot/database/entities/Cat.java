@@ -1,5 +1,9 @@
 package com.samb1232.urfu_java_bot.database.entities;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,11 +30,8 @@ public class Cat {
     @Column(name = "photo_path", nullable = false)
     private String photoPath;
 
-    @Column(name = "likes_count", nullable = false, columnDefinition = "integer default 0")
-    private Integer likesCount = 0;
-
-    @Column(name = "dislikes_count", nullable = false, columnDefinition = "integer default 0")
-    private Integer dislikesCount = 0;
+    @OneToMany(mappedBy = "cat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CatReaction> reactions = new ArrayList<>();
 
     
     public Long getCatId() {
@@ -56,19 +58,7 @@ public class Cat {
         this.photoPath = photoPath;
     }
 
-    public Integer getLikesCount() {
-        return likesCount;
-    }
-
-    public void setLikesCount(Integer likesCount) {
-        this.likesCount = likesCount;
-    }
-
-    public Integer getDislikesCount() {
-        return dislikesCount;
-    }
-
-    public void setDislikesCount(Integer dislikesCount) {
-        this.dislikesCount = dislikesCount;
+    public List<CatReaction> getReactions() {
+        return reactions;
     }
 }

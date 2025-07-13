@@ -17,15 +17,12 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 public class CommandHandler implements UpdateHandler {
     private final TelegramApiService telegramApiService;
     private final DBService dbService;
-    private final KeyboardFactory keyboardFactory;
 
     public CommandHandler(
         TelegramApiService telegramApiService, 
-        DBService dbService,
-        KeyboardFactory keyboardFactory) {
+        DBService dbService) {
         this.telegramApiService = telegramApiService;
         this.dbService = dbService;
-        this.keyboardFactory = keyboardFactory;
     }
 
     @Override
@@ -47,7 +44,7 @@ public class CommandHandler implements UpdateHandler {
         
         telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, user.getName()));
 
-        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, keyboardFactory.createMainMenuKeyboard());
+        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
     }
 
     private void processUnknownCommand(UserMessage message) {

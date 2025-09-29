@@ -6,8 +6,10 @@ import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.database.DBService;
 import com.samb1232.urfu_java_bot.database.entities.User;
 import com.samb1232.urfu_java_bot.dto.TGUser;
+import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
+import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
@@ -25,7 +27,8 @@ public class CommandHandler implements UpdateHandler {
     }
 
     @Override
-    public void handle(UserMessage message, StateMachine<BotState, BotEvent> stateMachine) {
+    public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
+        UserMessage message = updateInfo.getUserMessage();
         String command = message.getText();
 
         switch (command) {
@@ -41,7 +44,8 @@ public class CommandHandler implements UpdateHandler {
         User user = dbService.getOrCreateUser(tgUser);
         
         telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, user.getName()));
-        telegramApiService.sendMessage(chatId, TextFields.MAIN_MENU_TEXT);
+
+        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
     }
 
     private void processUnknownCommand(UserMessage message) {

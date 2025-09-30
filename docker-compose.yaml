@@ -1,7 +1,6 @@
 services:
   postgres:
     image: postgres:14
-    container_name: catgram_postgres
     environment:
       POSTGRES_DB: catgram_db
       POSTGRES_USER: postgres
@@ -15,6 +14,7 @@ services:
     build: ./TelegramService
     depends_on:
       - postgres
+      - rabbitmq
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/catgram_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -23,6 +23,33 @@ services:
       - SPRING_JPA_SHOW_SQL=true
     ports:
       - "8080:8080"
+      
+  catservice:
+    build: ./CatService
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/catgram_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=your_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    ports:
+      - "8081:8081"
+
+  rabbitmq:
+      image: rabbitmq:3-management
+      ports:
+        - "15672:15672"
+      volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
+
 
 volumes:
   postgres_data:
+  rabbitmq_data:

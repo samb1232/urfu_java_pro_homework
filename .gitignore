@@ -32,11 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
-application.properties
+.env
 
 *.jpg
 *.png
 
 *.txt
-
-

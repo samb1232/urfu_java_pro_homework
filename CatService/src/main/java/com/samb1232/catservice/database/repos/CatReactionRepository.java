@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.database.repos;
+package com.samb1232.catservice.database.repos;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.samb1232.urfu_java_bot.database.entities.CatReaction;
+import com.samb1232.catservice.database.entities.CatReaction;
 
 public interface CatReactionRepository extends JpaRepository<CatReaction, Long> {
     Optional<CatReaction> findByUserUserIdAndCatCatId(Long userId, Long catId);

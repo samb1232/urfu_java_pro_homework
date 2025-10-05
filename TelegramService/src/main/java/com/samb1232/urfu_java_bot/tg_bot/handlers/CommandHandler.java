@@ -3,8 +3,6 @@ package com.samb1232.urfu_java_bot.tg_bot.handlers;
 import org.springframework.statemachine.StateMachine;
 
 import com.samb1232.urfu_java_bot.constants.TextFields;
-import com.samb1232.urfu_java_bot.database.DBService;
-import com.samb1232.urfu_java_bot.database.entities.User;
 import com.samb1232.urfu_java_bot.dto.TGUser;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
@@ -17,13 +15,10 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
 public class CommandHandler implements UpdateHandler {
     private final TelegramApiService telegramApiService;
-    private final DBService dbService;
 
     public CommandHandler(
-        TelegramApiService telegramApiService, 
-        DBService dbService) {
+        TelegramApiService telegramApiService) {
         this.telegramApiService = telegramApiService;
-        this.dbService = dbService;
     }
 
     @Override
@@ -41,9 +36,8 @@ public class CommandHandler implements UpdateHandler {
         stateMachine.sendEvent(BotEvent.START);
         Long chatId = message.getChatId();
         TGUser tgUser = message.getTGUser();
-        User user = dbService.getOrCreateUser(tgUser);
         
-        telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, user.getName()));
+        telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, tgUser.getFirstName()));
 
         telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
     }

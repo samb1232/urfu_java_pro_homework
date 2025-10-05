@@ -32,7 +32,7 @@ build/
 ### VS Code ###
 .vscode/
 
-application.properties
+.env
 
 *.jpg
 *.png
@@ -40,3 +40,4 @@ application.properties
 *.txt
 
 
+.DS_store

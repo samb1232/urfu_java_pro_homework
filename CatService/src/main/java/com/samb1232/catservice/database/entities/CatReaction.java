@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.database.entities;
+package com.samb1232.catservice.database.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

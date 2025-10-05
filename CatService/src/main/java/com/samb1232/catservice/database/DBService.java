@@ -1,4 +1,4 @@
-package com.samb1232.urfu_java_bot.database;
+package com.samb1232.catservice.database;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,13 +8,13 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.samb1232.urfu_java_bot.database.entities.Cat;
-import com.samb1232.urfu_java_bot.database.entities.CatReaction;
-import com.samb1232.urfu_java_bot.database.entities.User;
-import com.samb1232.urfu_java_bot.database.repos.CatReactionRepository;
-import com.samb1232.urfu_java_bot.database.repos.CatRepository;
-import com.samb1232.urfu_java_bot.database.repos.UserRepository;
-import com.samb1232.urfu_java_bot.dto.TGUser;
+import com.samb1232.catservice.database.entities.Cat;
+import com.samb1232.catservice.database.entities.CatReaction;
+import com.samb1232.catservice.database.entities.User;
+import com.samb1232.catservice.database.repos.CatReactionRepository;
+import com.samb1232.catservice.database.repos.CatRepository;
+import com.samb1232.catservice.database.repos.UserRepository;
+import com.samb1232.catservice.dto.TGUser;
 
 import jakarta.persistence.EntityNotFoundException;
 

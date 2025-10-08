@@ -18,17 +18,22 @@ import com.samb1232.urfu_java_bot.tg_bot.handlers.UnknownCallbackQueryHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
+import com.samb1232.urfu_java_bot.dto.AddCatMessage;
+import com.samb1232.urfu_java_bot.messaging.RabbitMqService;
 
 public class AddCatHandler  extends UnknownCallbackQueryHandler implements UpdateHandler  {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddCatHandler.class);
     private final TelegramApiService telegramApiService;
+    private final RabbitMqService rabbitMqService;
 
     private final Map<Long, Boolean> waitingForNameByChatId = new ConcurrentHashMap<>();
+    private final Map<Long, String> photoFileIdByChatId = new ConcurrentHashMap<>();
 
-    public AddCatHandler(TelegramApiService telegramApiService) {
+    public AddCatHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
+        this.rabbitMqService = rabbitMqService;
     }
 
     @Override
@@ -49,6 +54,7 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
         switch (callbackData) {
             case MenuCallbackData.BACK_TO_MAIN_MENU_CALLBACK -> {
                 waitingForNameByChatId.remove(chatId);
+                photoFileIdByChatId.remove(chatId);
                 stateMachine.sendEvent(BotEvent.START);
                 telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
             }
@@ -63,6 +69,9 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
         boolean waitingForName = waitingForNameByChatId.getOrDefault(chatId, Boolean.FALSE);
 
         if (!waitingForName) {
+            if (userMessage.getPhotoFileId() != null) {
+                photoFileIdByChatId.put(chatId, userMessage.getPhotoFileId());
+            }
             telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT, KeyboardFactory.createBackToMainMenuKeyboard());
             waitingForNameByChatId.put(chatId, Boolean.TRUE);
             return;
@@ -71,8 +80,21 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
         String name = userMessage.getText();
         if (name != null && !name.startsWith("/")) {
             LOGGER.info("User added a cat");
+            Long userId = userMessage.getTGUser() != null ? userMessage.getTGUser().getId() : chatId;
+            String photoId = photoFileIdByChatId.get(chatId);
+            AddCatMessage addCatMessage = new AddCatMessage(userId, photoId, name);
+            try {
+                String payload = String.format("{\"userId\":%d,\"photoFileId\":\"%s\",\"catName\":\"%s\"}",
+                        addCatMessage.getUserId(),
+                        photoId == null ? "" : photoId,
+                        name.replace("\"", "\\\""));
+                rabbitMqService.sendToQueue(payload);
+            } catch (Exception e) {
+                LOGGER.error("Failed to enqueue AddCatMessage", e);
+            }
             telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_DONE_TEXT, KeyboardFactory.createBackToMainMenuKeyboard());
             waitingForNameByChatId.remove(chatId);
+            photoFileIdByChatId.remove(chatId);
             return;
         }
 

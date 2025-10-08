@@ -5,11 +5,13 @@ public class UserMessage {
     private final String text;
     private final TGUser tgUser;
     private final Long chatId;
+    private final String photoFileId;
 
-    public UserMessage(String text, TGUser tgUser, Long chatId) {
+    public UserMessage(String text, TGUser tgUser, Long chatId, String photoFileId) {
         this.text = text;
         this.tgUser = tgUser;
         this.chatId = chatId;
+        this.photoFileId = photoFileId;
     }
     
     public String getText() {
@@ -22,5 +24,9 @@ public class UserMessage {
 
     public Long getChatId() {
         return chatId;
+    }
+
+    public String getPhotoFileId() {
+        return photoFileId;
     }
 }

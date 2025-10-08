@@ -8,6 +8,9 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 import com.samb1232.urfu_java_bot.tg_bot.MainBot;
 
+import org.springframework.amqp.core.Queue;
+import org.springframework.beans.factory.annotation.Value;
+
 @Configuration
 public class BotConfiguration {
     @Bean
@@ -15,5 +18,10 @@ public class BotConfiguration {
         var api = new TelegramBotsApi(DefaultBotSession.class);
         api.registerBot(kittyBot);
         return api;
+    }
+
+    @Bean
+    public Queue appQueue(@Value("${app.rabbitmq.queue:telegram-service-queue}") String queueName) {
+        return new Queue(queueName, true);
     }
 }

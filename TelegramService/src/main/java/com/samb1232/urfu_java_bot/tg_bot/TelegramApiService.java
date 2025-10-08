@@ -17,6 +17,8 @@ import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 
+ 
+
 
 public class TelegramApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramApiService.class);
@@ -60,10 +62,17 @@ public class TelegramApiService {
             );
             Long chatId = telegramMessage.getChatId();
             
+            String photoFileId = null;
+            if (telegramMessage.hasPhoto() && telegramMessage.getPhoto() != null && !telegramMessage.getPhoto().isEmpty()) {
+                var sizes = telegramMessage.getPhoto();
+                photoFileId = sizes.get(sizes.size() - 1).getFileId();
+            }
+
             userMessage = new UserMessage(
                 telegramMessage.getText(),
-                tgUser, 
-                chatId
+                tgUser,
+                chatId,
+                photoFileId
             );
         }
         return new UpdateInfo(userMessage, userCallbackQuery);

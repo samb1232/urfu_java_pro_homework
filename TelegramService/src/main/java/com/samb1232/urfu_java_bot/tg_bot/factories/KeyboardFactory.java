@@ -27,6 +27,16 @@ public class KeyboardFactory {
         return keyboardMarkup;
     }
 
+    public static InlineKeyboardMarkup createBackToMainMenuKeyboard() {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        keyboard.add(createButtonRow(ButtonNames.BACK_TO_MAIN_MENU_BUTTON_TEXT, MenuCallbackData.BACK_TO_MAIN_MENU_CALLBACK));
+
+        keyboardMarkup.setKeyboard(keyboard);
+        return keyboardMarkup;
+    }
+
     private static List<InlineKeyboardButton> createButtonRow(String text, String callbackData) {
         List<InlineKeyboardButton> row = new ArrayList<>();
         row.add(InlineKeyboardButton.builder()

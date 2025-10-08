@@ -4,4 +4,5 @@ public class ButtonNames {
     public static final String MY_CATS_BUTTON_TEXT = "Мои котики";
     public static final String VIEW_CATS_BUTTON_TEXT = "Смотреть котиков";
     public static final String ADD_CAT_BUTTON_TEXT = "Добавить котика";
+    public static final String BACK_TO_MAIN_MENU_BUTTON_TEXT = "В главное меню";
 }

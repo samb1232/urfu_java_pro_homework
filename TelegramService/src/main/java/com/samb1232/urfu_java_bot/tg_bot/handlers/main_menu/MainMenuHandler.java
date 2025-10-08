@@ -45,6 +45,7 @@ public class MainMenuHandler extends UnknownCallbackQueryHandler implements Upda
             case MenuCallbackData.ADD_CAT_CALLBACK -> {
                 telegramApiService.sendMessage(chatId, "Вы выбрали: Добавить котика");
                 stateMachine.sendEvent(BotEvent.ADD_CAT_COMMAND);
+                telegramApiService.sendMessageWithKeyboard(chatId, com.samb1232.urfu_java_bot.constants.TextFields.ADD_CAT_SEND_PHOTO_TEXT, com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory.createBackToMainMenuKeyboard());
             }
                 
             default -> processUnkownCallbackQuery(callbackQuery, stateMachine);

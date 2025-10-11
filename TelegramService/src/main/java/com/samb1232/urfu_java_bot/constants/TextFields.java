@@ -11,4 +11,7 @@ public class TextFields {
     public static final String ADD_CAT_SEND_PHOTO_TEXT = "Отправьте фото котика";
     public static final String ADD_CAT_PHOTO_RECEIVED_TEXT = "Фото получено. Введите имя котика";
     public static final String ADD_CAT_DONE_TEXT = "Ваш котик добавлен в базу";
+
+    public static final String MY_CATS_LIST_TEXT = "Ваши котики:";
+    public static final String MY_CATS_EMPTY_TEXT = "У вас пока нет котиков";
 }

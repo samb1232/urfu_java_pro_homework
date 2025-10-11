@@ -8,6 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.samb1232.urfu_java_bot.constants.ButtonNames;
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
+import com.samb1232.urfu_java_bot.dto.CatInfo;
 
 
 public class KeyboardFactory {
@@ -30,6 +31,22 @@ public class KeyboardFactory {
     public static InlineKeyboardMarkup createBackToMainMenuKeyboard() {
         InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        keyboard.add(createButtonRow(ButtonNames.BACK_TO_MAIN_MENU_BUTTON_TEXT, MenuCallbackData.BACK_TO_MAIN_MENU_CALLBACK));
+
+        keyboardMarkup.setKeyboard(keyboard);
+        return keyboardMarkup;
+    }
+
+    public static InlineKeyboardMarkup createCatsListKeyboard(List<CatInfo> cats) {
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboard = new ArrayList<>();
+
+        for (int i = 0; i < cats.size(); i++) {
+            CatInfo cat = cats.get(i);
+            String callbackData = MenuCallbackData.CAT_DETAILS_PREFIX + i;
+            keyboard.add(createButtonRow(cat.getName(), callbackData));
+        }
 
         keyboard.add(createButtonRow(ButtonNames.BACK_TO_MAIN_MENU_BUTTON_TEXT, MenuCallbackData.BACK_TO_MAIN_MENU_CALLBACK));
 

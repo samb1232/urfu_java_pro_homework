@@ -17,8 +17,6 @@ import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 
- 
-
 
 public class TelegramApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramApiService.class);

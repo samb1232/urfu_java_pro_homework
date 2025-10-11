@@ -24,4 +24,14 @@ public class BotConfiguration {
     public Queue appQueue(@Value("${app.rabbitmq.queue:telegram-service-queue}") String queueName) {
         return new Queue(queueName, true);
     }
+
+    @Bean
+    public Queue myCatsRequestQueue() {
+        return new Queue("my_cats_request", true);
+    }
+
+    @Bean
+    public Queue myCatsResponseQueue() {
+        return new Queue("my_cats_response", true);
+    }
 }

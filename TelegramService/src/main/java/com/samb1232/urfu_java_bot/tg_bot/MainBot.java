@@ -44,7 +44,7 @@ public class MainBot extends TelegramLongPollingBot {
         this.mainMenuHandler = new MainMenuHandler(telegramApiService);
         this.addCatHandler = new AddCatHandler(telegramApiService, rabbitMqService);
         this.viewCatsHandler = new ViewCatsHandler(telegramApiService);
-        this.myCatsHandler = new MyCatsHandler(telegramApiService);
+        this.myCatsHandler = new MyCatsHandler(telegramApiService, rabbitMqService);
     }
 
     @Override

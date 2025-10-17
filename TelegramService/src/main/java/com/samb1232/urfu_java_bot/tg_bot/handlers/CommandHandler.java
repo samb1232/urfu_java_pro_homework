@@ -1,6 +1,7 @@
 package com.samb1232.urfu_java_bot.tg_bot.handlers;
 
 import org.springframework.statemachine.StateMachine;
+import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.dto.TGUser;
@@ -11,13 +12,12 @@ import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
-
-
+@Service
 public class CommandHandler implements UpdateHandler {
     private final TelegramApiService telegramApiService;
 
     public CommandHandler(
-        TelegramApiService telegramApiService) {
+            TelegramApiService telegramApiService) {
         this.telegramApiService = telegramApiService;
     }
 
@@ -36,10 +36,11 @@ public class CommandHandler implements UpdateHandler {
         stateMachine.sendEvent(BotEvent.START);
         Long chatId = message.getChatId();
         TGUser tgUser = message.getTGUser();
-        
+
         telegramApiService.sendMessage(chatId, String.format(TextFields.HELLO_MESSAGE_TEXT, tgUser.getFirstName()));
 
-        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
+        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT,
+                KeyboardFactory.createMainMenuKeyboard());
     }
 
     private void processUnknownCommand(UserMessage message) {

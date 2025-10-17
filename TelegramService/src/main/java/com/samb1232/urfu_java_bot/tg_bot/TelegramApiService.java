@@ -2,7 +2,8 @@ package com.samb1232.urfu_java_bot.tg_bot;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
@@ -17,15 +18,13 @@ import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 
- 
-
-
+@Service
 public class TelegramApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramApiService.class);
-    private final TelegramLongPollingBot bot;
+    private final MainBot mainBot;
 
-    public TelegramApiService(TelegramLongPollingBot bot) {
-        this.bot = bot;
+    public TelegramApiService(@Lazy MainBot mainBot) {
+        this.mainBot = mainBot;
     }
 
     public void sendMessage(Long chatId, String text) {
@@ -33,16 +32,15 @@ public class TelegramApiService {
         var sendMessage = new SendMessage(chatIdStr, text);
 
         try {
-            bot.execute(sendMessage);
+            mainBot.execute(sendMessage);
         } catch (TelegramApiException e) {
             LOGGER.error("Error sending message", e);
         }
     }
-    
+
     public static UpdateInfo toUpdateInfo(Update update) {
         UserCallback userCallbackQuery = null;
         UserMessage userMessage = null;
-
 
         if (update.hasCallbackQuery()) {
             CallbackQuery callbackQuery = update.getCallbackQuery();
@@ -55,37 +53,36 @@ public class TelegramApiService {
 
             User user = telegramMessage.getFrom();
             TGUser tgUser = new TGUser(
-                user.getId(),
-                user.getUserName(),
-                user.getFirstName(),
-                user.getLastName()
-            );
+                    user.getId(),
+                    user.getUserName(),
+                    user.getFirstName(),
+                    user.getLastName());
             Long chatId = telegramMessage.getChatId();
-            
+
             String photoFileId = null;
-            if (telegramMessage.hasPhoto() && telegramMessage.getPhoto() != null && !telegramMessage.getPhoto().isEmpty()) {
+            if (telegramMessage.hasPhoto() && telegramMessage.getPhoto() != null
+                    && !telegramMessage.getPhoto().isEmpty()) {
                 var sizes = telegramMessage.getPhoto();
                 photoFileId = sizes.get(sizes.size() - 1).getFileId();
             }
 
             userMessage = new UserMessage(
-                telegramMessage.getText(),
-                tgUser,
-                chatId,
-                photoFileId
-            );
+                    telegramMessage.getText(),
+                    tgUser,
+                    chatId,
+                    photoFileId);
         }
         return new UpdateInfo(userMessage, userCallbackQuery);
-    } 
-    
+    }
+
     public void sendMessageWithKeyboard(Long chatId, String text, InlineKeyboardMarkup keyboard) {
         SendMessage message = new SendMessage();
         message.setChatId(chatId.toString());
         message.setText(text);
         message.setReplyMarkup(keyboard);
-        
+
         try {
-            bot.execute(message);
+            mainBot.execute(message);
         } catch (TelegramApiException e) {
             LOGGER.error("Error sending message with keyboard", e);
         }
@@ -94,9 +91,9 @@ public class TelegramApiService {
     public void answerCallbackQuery(String callbackQueryId) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackQueryId);
-        
+
         try {
-            bot.execute(answer);
+            mainBot.execute(answer);
         } catch (TelegramApiException e) {
             LOGGER.error("Error answering callback query", e);
         }

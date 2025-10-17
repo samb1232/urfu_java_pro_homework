@@ -1,6 +1,7 @@
 package com.samb1232.urfu_java_bot.tg_bot.handlers.view_cats;
 
 import org.springframework.statemachine.StateMachine;
+import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
@@ -10,8 +11,8 @@ import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
-
-public class ViewCatsHandler extends UnknownCallbackQueryHandler implements UpdateHandler  {
+@Service
+public class ViewCatsHandler extends UnknownCallbackQueryHandler implements UpdateHandler {
 
     private final TelegramApiService telegramApiService;
 
@@ -29,12 +30,12 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
 
     private void processCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
         String callbackData = callbackQuery.getCallbackData();
-        
+
         switch (callbackData) {
             default -> processUnkownCallbackQuery(callbackQuery, stateMachine);
         }
-        
+
         telegramApiService.answerCallbackQuery(callbackQuery.getCallbackId());
     }
-    
+
 }

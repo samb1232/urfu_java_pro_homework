@@ -13,10 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 
 @Configuration
 public class BotConfiguration {
+
+    @Value("${bot.token}")
+    private String botToken;
+
     @Bean
-    public TelegramBotsApi telegramBotsApi(MainBot kittyBot) throws TelegramApiException {
-        var api = new TelegramBotsApi(DefaultBotSession.class);
-        api.registerBot(kittyBot);
+    public TelegramBotsApi telegramBotsApi(MainBot mainBot) throws TelegramApiException {
+        TelegramBotsApi api = new TelegramBotsApi(DefaultBotSession.class);
+        api.registerBot(mainBot);
         return api;
     }
 

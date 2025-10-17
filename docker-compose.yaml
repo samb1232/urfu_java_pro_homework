@@ -5,8 +5,6 @@ services:
       POSTGRES_DB: catgram_db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: your_password
-    ports:
-      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
@@ -21,8 +19,6 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
-    ports:
-      - "8080:8080"
 
   catservice:
     build: ./CatService
@@ -40,8 +36,6 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
-    ports:
-      - "8081:8081"
 
   rabbitmq:
       image: rabbitmq:3-management

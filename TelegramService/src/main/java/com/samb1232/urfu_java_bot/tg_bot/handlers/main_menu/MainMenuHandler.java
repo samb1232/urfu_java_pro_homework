@@ -1,16 +1,20 @@
 package com.samb1232.urfu_java_bot.tg_bot.handlers.main_menu;
 
 import org.springframework.statemachine.StateMachine;
+import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
+import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
+import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UnknownCallbackQueryHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
+@Service
 public class MainMenuHandler extends UnknownCallbackQueryHandler implements UpdateHandler {
 
     private final TelegramApiService telegramApiService;
@@ -26,32 +30,32 @@ public class MainMenuHandler extends UnknownCallbackQueryHandler implements Upda
             processCallbackQuery(updateInfo.getUserCallback(), stateMachine);
         }
     }
-    
+
     private void processCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
         String callbackData = callbackQuery.getCallbackData();
         Long chatId = callbackQuery.getChatId();
-        
+
         switch (callbackData) {
             case MenuCallbackData.MY_CATS_CALLBACK -> {
                 telegramApiService.sendMessage(chatId, "Вы выбрали: Мои котики");
                 stateMachine.sendEvent(BotEvent.MY_CATS_COMMAND);
             }
-                
+
             case MenuCallbackData.VIEW_CATS_CALLBACK -> {
                 telegramApiService.sendMessage(chatId, "Вы выбрали: Смотреть котиков");
                 stateMachine.sendEvent(BotEvent.VIEW_CATS_COMMAND);
             }
-                
+
             case MenuCallbackData.ADD_CAT_CALLBACK -> {
                 stateMachine.sendEvent(BotEvent.ADD_CAT_COMMAND);
-                telegramApiService.sendMessageWithKeyboard(chatId, com.samb1232.urfu_java_bot.constants.TextFields.ADD_CAT_SEND_PHOTO_TEXT, com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory.createBackToMainMenuKeyboard());
+                telegramApiService.sendMessageWithKeyboard(chatId,
+                        TextFields.ADD_CAT_SEND_PHOTO_TEXT,
+                        KeyboardFactory.createBackToMainMenuKeyboard());
             }
-                
+
             default -> processUnkownCallbackQuery(callbackQuery, stateMachine);
         }
-        
+
         telegramApiService.answerCallbackQuery(callbackQuery.getCallbackId());
     }
-
-    
 }

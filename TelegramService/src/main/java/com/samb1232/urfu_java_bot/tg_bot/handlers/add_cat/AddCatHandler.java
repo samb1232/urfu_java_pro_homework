@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.statemachine.StateMachine;
+import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
 import com.samb1232.urfu_java_bot.constants.TextFields;
@@ -21,7 +22,8 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 import com.samb1232.urfu_java_bot.dto.AddCatMessage;
 import com.samb1232.urfu_java_bot.messaging.RabbitMqService;
 
-public class AddCatHandler  extends UnknownCallbackQueryHandler implements UpdateHandler  {
+@Service
+public class AddCatHandler extends UnknownCallbackQueryHandler implements UpdateHandler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AddCatHandler.class);
     private final TelegramApiService telegramApiService;
@@ -50,17 +52,18 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
     private void processCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
         String callbackData = callbackQuery.getCallbackData();
         Long chatId = callbackQuery.getChatId();
-        
+
         switch (callbackData) {
             case MenuCallbackData.BACK_TO_MAIN_MENU_CALLBACK -> {
                 waitingForNameByChatId.remove(chatId);
                 photoFileIdByChatId.remove(chatId);
                 stateMachine.sendEvent(BotEvent.START);
-                telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());
+                telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT,
+                        KeyboardFactory.createMainMenuKeyboard());
             }
             default -> processUnkownCallbackQuery(callbackQuery, stateMachine);
         }
-        
+
         telegramApiService.answerCallbackQuery(callbackQuery.getCallbackId());
     }
 
@@ -72,7 +75,8 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
             if (userMessage.getPhotoFileId() != null) {
                 photoFileIdByChatId.put(chatId, userMessage.getPhotoFileId());
             }
-            telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT, KeyboardFactory.createBackToMainMenuKeyboard());
+            telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT,
+                    KeyboardFactory.createBackToMainMenuKeyboard());
             waitingForNameByChatId.put(chatId, Boolean.TRUE);
             return;
         }
@@ -92,14 +96,16 @@ public class AddCatHandler  extends UnknownCallbackQueryHandler implements Updat
             } catch (Exception e) {
                 LOGGER.error("Failed to enqueue AddCatMessage", e);
             }
-            telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_DONE_TEXT, KeyboardFactory.createBackToMainMenuKeyboard());
+            telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_DONE_TEXT,
+                    KeyboardFactory.createBackToMainMenuKeyboard());
             waitingForNameByChatId.remove(chatId);
             photoFileIdByChatId.remove(chatId);
             return;
         }
 
         // If invalid input, re-ask
-        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT, KeyboardFactory.createBackToMainMenuKeyboard());
+        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT,
+                KeyboardFactory.createBackToMainMenuKeyboard());
     }
-    
+
 }

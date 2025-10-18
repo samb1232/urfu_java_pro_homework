@@ -2,12 +2,12 @@ package com.samb1232.urfu_java_bot.dto;
 
 public class AddCatMessage {
     private final Long userId;
-    private final String photoFileId;
+    private final String photoBase64;
     private final String catName;
 
-    public AddCatMessage(Long userId, String photoFileId, String catName) {
+    public AddCatMessage(Long userId, String photoBase64, String catName) {
         this.userId = userId;
-        this.photoFileId = photoFileId;
+        this.photoBase64 = photoBase64;
         this.catName = catName;
     }
 
@@ -15,8 +15,8 @@ public class AddCatMessage {
         return userId;
     }
 
-    public String getPhotoFileId() {
-        return photoFileId;
+    public String getPhotoBase64() {
+        return photoBase64;
     }
 
     public String getCatName() {

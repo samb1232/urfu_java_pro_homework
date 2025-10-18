@@ -30,10 +30,10 @@ public class RabbitMqListenerService {
         try {
             AddCatMessage addCatMessage = objectMapper.readValue(message, AddCatMessage.class);
 
-            LOGGER.info("Processing AddCatMessage - userId: {}, catName: {}, photoFileId: {}",
+            LOGGER.info("Processing AddCatMessage - userId: {}, catName: {}, photoBase64 length: {}",
                     addCatMessage.getUserId(),
                     addCatMessage.getCatName(),
-                    addCatMessage.getPhotoFileId());
+                    addCatMessage.getPhotoBase64() != null ? addCatMessage.getPhotoBase64().length() : 0);
 
             // Ensure user exists in database
             TGUser tgUser = new TGUser(
@@ -46,7 +46,7 @@ public class RabbitMqListenerService {
 
             Cat cat = dbService.createCat(
                     addCatMessage.getUserId(),
-                    addCatMessage.getPhotoFileId()
+                    addCatMessage.getPhotoBase64()
             );
 
             LOGGER.info("Successfully created cat with ID: {} for user: {}",

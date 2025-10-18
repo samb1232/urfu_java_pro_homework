@@ -1,10 +1,16 @@
 package com.samb1232.urfu_java_bot.tg_bot;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Base64;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
@@ -96,6 +102,32 @@ public class TelegramApiService {
             mainBot.execute(answer);
         } catch (TelegramApiException e) {
             LOGGER.error("Error answering callback query", e);
+        }
+    }
+
+    public String downloadFileAsBase64(String fileId) {
+        try {
+            // Step 1: Get file path
+            GetFile getFile = new GetFile();
+            getFile.setFileId(fileId);
+            org.telegram.telegrambots.meta.api.objects.File fileObj = mainBot.execute(getFile);
+            String filePath = fileObj.getFilePath();
+    
+            String fileUrl = "https://api.telegram.org/file/bot" + mainBot.getBotToken() + "/" + filePath;
+    
+            // Step 3: Download via HTTP
+            InputStream inputStream = new URL(fileUrl).openStream();
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            byte[] data = new byte[1024];
+            int nRead;
+            while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            byte[] fileBytes = buffer.toByteArray();
+            return Base64.getEncoder().encodeToString(fileBytes);
+        } catch (Exception e) {
+            LOGGER.error("Error downloading file as base64", e);
+            return null;
         }
     }
 }

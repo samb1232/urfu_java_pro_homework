@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -27,8 +28,10 @@ public class Cat {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "photo_path", nullable = false)
-    private String photoPath;
+
+    @Lob
+    @Column(name = "photo_base64", nullable = false, columnDefinition = "TEXT")
+    private String photoBase64;
 
     @OneToMany(mappedBy = "cat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CatReaction> reactions = new ArrayList<>();
@@ -50,12 +53,12 @@ public class Cat {
         this.user = user;
     }
 
-    public String getPhotoPath() {
-        return photoPath;
+    public String getPhotoBase64() {
+        return photoBase64;
     }
 
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
+    public void setPhotoBase64(String photoBase64) {
+        this.photoBase64 = photoBase64;
     }
 
     public List<CatReaction> getReactions() {

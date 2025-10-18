@@ -2,15 +2,15 @@ package com.samb1232.catservice.dto;
 
 public class AddCatMessage {
     private Long userId;
-    private String photoFileId;
+    private String photoBase64;
     private String catName;
 
     public AddCatMessage() {
     }
 
-    public AddCatMessage(Long userId, String photoFileId, String catName) {
+    public AddCatMessage(Long userId, String photoBase64, String catName) {
         this.userId = userId;
-        this.photoFileId = photoFileId;
+        this.photoBase64 = photoBase64;
         this.catName = catName;
     }
 
@@ -22,12 +22,12 @@ public class AddCatMessage {
         this.userId = userId;
     }
 
-    public String getPhotoFileId() {
-        return photoFileId;
+    public String getPhotoBase64() {
+        return photoBase64;
     }
 
-    public void setPhotoFileId(String photoFileId) {
-        this.photoFileId = photoFileId;
+    public void setPhotoBase64(String photoBase64) {
+        this.photoBase64 = photoBase64;
     }
 
     public String getCatName() {

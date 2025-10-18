@@ -10,12 +10,12 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfiguration {
 
-    @Value("${app.rabbitmq.queue:telegram-service-queue}")
-    private String queueName;
+    @Value("${app.rabbitmq.add_cat_request_queue}")
+    private String addCatRequestQueueName;
 
     @Bean
-    public Queue queue() {
-        return new Queue(queueName, true);
+    public Queue addCatRequestQueue() {
+        return new Queue(addCatRequestQueueName, true);
     }
 
     @Bean

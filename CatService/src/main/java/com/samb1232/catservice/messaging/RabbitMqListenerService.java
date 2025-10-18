@@ -23,9 +23,9 @@ public class RabbitMqListenerService {
         this.objectMapper = new ObjectMapper();
     }
 
-    @RabbitListener(queues = "${app.rabbitmq.queue:telegram-service-queue}")
-    public void receiveMessage(String message) {
-        LOGGER.info("Received message from queue: {}", message);
+    @RabbitListener(queues = "${app.rabbitmq.add_cat_request_queue}")
+    public void handleAddCatRequestMessage(String message) {
+        LOGGER.info("Received message from add cat request queue: {}", message);
 
         try {
             AddCatMessage addCatMessage = objectMapper.readValue(message, AddCatMessage.class);
@@ -35,7 +35,6 @@ public class RabbitMqListenerService {
                     addCatMessage.getCatName(),
                     addCatMessage.getPhotoBase64() != null ? addCatMessage.getPhotoBase64().length() : 0);
 
-            // Ensure user exists in database
             TGUser tgUser = new TGUser(
                     addCatMessage.getUserId(),
                     null,

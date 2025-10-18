@@ -11,16 +11,16 @@ public class RabbitMqService {
     private static final Logger LOGGER = LoggerFactory.getLogger(RabbitMqService.class);
 
     private final RabbitTemplate rabbitTemplate;
-    private final String defaultQueueName;
+    private final String queueName;
 
     public RabbitMqService(RabbitTemplate rabbitTemplate,
-                           @Value("${app.rabbitmq.queue:telegram-service-queue}") String defaultQueueName) {
+                           @Value("${app.rabbitmq.add_cat_request_queue}") String queueName) {
         this.rabbitTemplate = rabbitTemplate;
-        this.defaultQueueName = defaultQueueName;
+        this.queueName = queueName;
     }
 
     public void sendToQueue(String message) {
-        sendToQueue(defaultQueueName, message);
+        sendToQueue(queueName, message);
     }
 
     public void sendToQueue(String queueName, String message) {

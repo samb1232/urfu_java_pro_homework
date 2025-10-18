@@ -41,10 +41,7 @@ services:
       image: rabbitmq:3-management
       ports:
         - "15672:15672"
-      volumes:
-        - rabbitmq_data:/var/lib/rabbitmq
 
 
 volumes:
   postgres_data:
-  rabbitmq_data:

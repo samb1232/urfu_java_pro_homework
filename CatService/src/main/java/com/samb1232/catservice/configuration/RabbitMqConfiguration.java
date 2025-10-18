@@ -13,9 +13,25 @@ public class RabbitMqConfiguration {
     @Value("${app.rabbitmq.add_cat_request_queue}")
     private String addCatRequestQueueName;
 
+    @Value("${app.rabbitmq.get_my_cats_queue}")
+    private String getMyCatsQueueName;
+
+    @Value("${app.rabbitmq.my_cats_response_queue}")
+    private String myCatsResponseQueueName;
+
     @Bean
     public Queue addCatRequestQueue() {
         return new Queue(addCatRequestQueueName, true);
+    }
+
+    @Bean
+    public Queue getMyCatsQueue() {
+        return new Queue(getMyCatsQueueName, true);
+    }
+
+    @Bean
+    public Queue myCatsResponseQueue() {
+        return new Queue(myCatsResponseQueueName, true);
     }
 
     @Bean

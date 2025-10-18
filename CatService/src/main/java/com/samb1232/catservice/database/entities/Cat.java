@@ -28,6 +28,8 @@ public class Cat {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Lob
     @Column(name = "photo_base64", nullable = false, columnDefinition = "TEXT")
@@ -59,6 +61,14 @@ public class Cat {
 
     public void setPhotoBase64(String photoBase64) {
         this.photoBase64 = photoBase64;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public List<CatReaction> getReactions() {

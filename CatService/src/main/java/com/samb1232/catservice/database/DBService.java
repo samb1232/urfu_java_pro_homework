@@ -37,11 +37,12 @@ public class DBService {
     }
 
     @Transactional
-    public Cat createCat(Long userId, String photoBase64) {
+    public Cat createCat(Long userId, String photoBase64, String catName) {
         User user = getUserById(userId);
         Cat cat = new Cat();
         cat.setUser(user);
         cat.setPhotoBase64(photoBase64);
+        cat.setName(catName != null && !catName.isEmpty() ? catName : "Unnamed Cat");
         return catRepository.save(cat);
     }
 
@@ -118,5 +119,10 @@ public class DBService {
     public Optional<CatReaction.ReactionType> getUserReaction(Long userId, Long catId) {
         return catReactionRepository.findByUserUserIdAndCatCatId(userId, catId)
                 .map(CatReaction::getReaction);
+    }
+    
+    @Transactional
+    public List<Cat> getCatsWithReactionsByUser(Long userId) {
+        return catRepository.findByUserUserId(userId);
     }
 }

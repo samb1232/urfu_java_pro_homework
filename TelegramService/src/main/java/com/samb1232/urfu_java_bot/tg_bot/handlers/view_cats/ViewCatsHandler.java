@@ -21,6 +21,10 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
         this.telegramApiService = telegramApiService;
     }
 
+    public void onStart(Long chatId) {
+        telegramApiService.sendMessage(chatId, "Вы выбрали: Смотреть котиков");
+    }
+    
     @Override
     public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
         if (updateInfo.hasUserCallback()) {

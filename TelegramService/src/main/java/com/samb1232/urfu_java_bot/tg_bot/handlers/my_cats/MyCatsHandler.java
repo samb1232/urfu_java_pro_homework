@@ -32,6 +32,11 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
         this.catCacheService = catCacheService;
     }
 
+    public void onStart(Long chatId) {
+        telegramApiService.sendMessage(chatId, "Вы выбрали: Мои котики");
+        sendGetMyCatsRequest(chatId);
+    }
+
     @Override
     public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
         // Send request to get user's cats when entering MY_CATS state
@@ -42,10 +47,6 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
         } else if (updateInfo.hasUserMessage() && updateInfo.getUserMessage().getTGUser() != null) {
             userId = updateInfo.getUserMessage().getTGUser().getId();
         }
-
-        if (userId != null) {
-            sendGetMyCatsRequest(userId);
-        }
     }
 
     private void processCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
@@ -55,7 +56,7 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
         // Handle cat detail view
         if (callbackData.startsWith("view_cat_")) {
             try {
-                Long catId = Long.parseLong(callbackData.substring("view_cat_".length()));
+                Long catId = Long.valueOf(callbackData.substring("view_cat_".length()));
                 showCatDetails(chatId, catId);
             } catch (NumberFormatException e) {
                 LOGGER.error("Invalid cat ID in callback data: {}", callbackData, e);

@@ -24,7 +24,6 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
 @Service
 public class AddCatHandler extends UnknownCallbackQueryHandler implements UpdateHandler {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AddCatHandler.class);
     private final TelegramApiService telegramApiService;
     private final RabbitMqService rabbitMqService;
@@ -36,6 +35,14 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
         this.rabbitMqService = rabbitMqService;
+    }
+
+    public void onStart(Long chatId) {
+        telegramApiService.sendMessageWithKeyboard(
+            chatId,
+            TextFields.ADD_CAT_SEND_PHOTO_TEXT,
+            KeyboardFactory.createBackToMainMenuKeyboard()
+        );
     }
 
     @Override

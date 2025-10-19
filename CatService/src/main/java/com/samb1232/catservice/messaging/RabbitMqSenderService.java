@@ -27,7 +27,7 @@ public class RabbitMqSenderService {
         try {
             String jsonMessage = objectMapper.writeValueAsString(message);
             rabbitTemplate.convertAndSend(myCatsResponseQueueName, jsonMessage);
-            LOGGER.info("Message sent to queue '{}': {}", myCatsResponseQueueName, jsonMessage);
+            LOGGER.info("Message sent to queue '{}': {}", myCatsResponseQueueName, jsonMessage.subSequence(0, 50));
         } catch (Exception e) {
             LOGGER.error("Failed to send message to queue '{}': {}", myCatsResponseQueueName, message, e);
         }

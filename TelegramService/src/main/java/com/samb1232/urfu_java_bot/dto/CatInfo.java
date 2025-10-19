@@ -3,17 +3,17 @@ package com.samb1232.urfu_java_bot.dto;
 public class CatInfo {
     private Long id;
     private String name;
-    private String photoBase64;
+    private String photoPath;
     private Long likes;
     private Long dislikes;
 
     public CatInfo() {
     }
 
-    public CatInfo(Long id, String name, String photoBase64, Long likes, Long dislikes) {
+    public CatInfo(Long id, String name, String photoPath, Long likes, Long dislikes) {
         this.id = id;
         this.name = name;
-        this.photoBase64 = photoBase64;
+        this.photoPath = photoPath;
         this.likes = likes;
         this.dislikes = dislikes;
     }
@@ -34,12 +34,12 @@ public class CatInfo {
         this.name = name;
     }
 
-    public String getPhotoBase64() {
-        return photoBase64;
+    public String getPhotoPath() {
+        return photoPath;
     }
 
-    public void setPhotoBase64(String photoBase64) {
-        this.photoBase64 = photoBase64;
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public Long getLikes() {

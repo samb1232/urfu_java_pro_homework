@@ -13,12 +13,14 @@ services:
     depends_on:
       - rabbitmq
     env_file:
-      - .env 
+      - .env
     environment:
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    volumes:
+      - cat_photos:/app/photos
 
   catservice:
     build: ./CatService
@@ -36,6 +38,8 @@ services:
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+    volumes:
+      - cat_photos:/app/photos
 
   rabbitmq:
       image: rabbitmq:3-management
@@ -45,3 +49,4 @@ services:
 
 volumes:
   postgres_data:
+  cat_photos:

@@ -37,11 +37,11 @@ public class DBService {
     }
 
     @Transactional
-    public Cat createCat(Long userId, String photoBase64, String catName) {
+    public Cat createCat(Long userId, String photoPath, String catName) {
         User user = getUserById(userId);
         Cat cat = new Cat();
         cat.setUser(user);
-        cat.setPhotoBase64(photoBase64);
+        cat.setPhotoPath(photoPath);
         cat.setName(catName != null && !catName.isEmpty() ? catName : "Unnamed Cat");
         return catRepository.save(cat);
     }

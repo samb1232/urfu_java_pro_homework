@@ -108,12 +108,12 @@ public class TelegramApiService {
         }
     }
 
-    public String downloadFileAsBase64(String fileId) {
+    public byte[] downloadFile(String fileId) {
         try {
             String fileUrl = getFileUrlByFileId(fileId);
-            return downloadFileFromUrlAsBase64(fileUrl);
+            return downloadFileFromUrl(fileUrl);
         } catch (Exception e) {
-            LOGGER.error("Error downloading file as base64", e);
+            LOGGER.error("Error downloading file", e);
             return null;
         }
     }
@@ -126,7 +126,7 @@ public class TelegramApiService {
         return "https://api.telegram.org/file/bot" + mainBot.getBotToken() + "/" + filePath;
     }
 
-    private String downloadFileFromUrlAsBase64(String fileUrl) throws Exception {
+    private byte[] downloadFileFromUrl(String fileUrl) throws Exception {
         try (InputStream inputStream = new URL(fileUrl).openStream();
              ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
             byte[] data = new byte[1024];
@@ -134,24 +134,24 @@ public class TelegramApiService {
             while ((nRead = inputStream.read(data, 0, data.length)) != -1) {
                 buffer.write(data, 0, nRead);
             }
-            byte[] fileBytes = buffer.toByteArray();
-            return Base64.getEncoder().encodeToString(fileBytes);
+            return buffer.toByteArray();
         }
     }
 
-    public void sendPhotoWithCaption(Long chatId, String photoBase64, String caption) {
+    public void sendPhoto(Long chatId, byte[] photoBytes, String caption) {
         try {
-            byte[] photoBytes = Base64.getDecoder().decode(photoBase64);
             ByteArrayInputStream inputStream = new java.io.ByteArrayInputStream(photoBytes);
 
             SendPhoto sendPhoto = new SendPhoto();
             sendPhoto.setChatId(chatId.toString());
             sendPhoto.setPhoto(new InputFile(inputStream, "cat.jpg"));
-            sendPhoto.setCaption(caption);
+            if (caption != null) {
+                sendPhoto.setCaption(caption);
+            }
 
             mainBot.execute(sendPhoto);
         } catch (Exception e) {
-            LOGGER.error("Error sending photo with caption", e);
+            LOGGER.error("Error sending photo", e);
         }
     }
 }

@@ -31,9 +31,8 @@ public class Cat {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Lob
-    @Column(name = "photo_base64", nullable = false, columnDefinition = "TEXT")
-    private String photoBase64;
+    @Column(name = "photo_path", nullable = false)
+    private String photoPath;
 
     @OneToMany(mappedBy = "cat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CatReaction> reactions = new ArrayList<>();
@@ -55,12 +54,12 @@ public class Cat {
         this.user = user;
     }
 
-    public String getPhotoBase64() {
-        return photoBase64;
+    public String getPhotoPath() {
+        return photoPath;
     }
 
-    public void setPhotoBase64(String photoBase64) {
-        this.photoBase64 = photoBase64;
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 
     public String getName() {

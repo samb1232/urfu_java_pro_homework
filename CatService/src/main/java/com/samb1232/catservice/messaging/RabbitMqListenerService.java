@@ -38,10 +38,10 @@ public class RabbitMqListenerService {
         try {
             AddCatMessage addCatMessage = objectMapper.readValue(message, AddCatMessage.class);
 
-            LOGGER.info("Processing AddCatMessage - userId: {}, catName: {}, photoBase64 length: {}",
+            LOGGER.info("Processing AddCatMessage - userId: {}, catName: {}, photoPath: {}",
                     addCatMessage.getUserId(),
                     addCatMessage.getCatName(),
-                    addCatMessage.getPhotoBase64() != null ? addCatMessage.getPhotoBase64().length() : 0);
+                    addCatMessage.getPhotoPath());
 
             TGUser tgUser = new TGUser(
                     addCatMessage.getUserId(),
@@ -53,7 +53,7 @@ public class RabbitMqListenerService {
 
             Cat cat = dbService.createCat(
                     addCatMessage.getUserId(),
-                    addCatMessage.getPhotoBase64(),
+                    addCatMessage.getPhotoPath(),
                     addCatMessage.getCatName()
             );
 
@@ -85,7 +85,7 @@ public class RabbitMqListenerService {
                         return new CatInfo(
                                 cat.getCatId(),
                                 cat.getName(),
-                                cat.getPhotoBase64(),
+                                cat.getPhotoPath(),
                                 likes,
                                 dislikes
                         );

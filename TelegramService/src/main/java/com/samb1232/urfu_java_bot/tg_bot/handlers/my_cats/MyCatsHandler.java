@@ -11,6 +11,7 @@ import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.messaging.RabbitMqService;
 import com.samb1232.urfu_java_bot.services.CatCacheService;
+import com.samb1232.urfu_java_bot.services.FileStorageService;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UnknownCallbackQueryHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
@@ -24,12 +25,14 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
     private final TelegramApiService telegramApiService;
     private final RabbitMqService rabbitMqService;
     private final CatCacheService catCacheService;
+    private final FileStorageService fileStorageService;
 
-    public MyCatsHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService, CatCacheService catCacheService) {
+    public MyCatsHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService, CatCacheService catCacheService, FileStorageService fileStorageService) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
         this.rabbitMqService = rabbitMqService;
         this.catCacheService = catCacheService;
+        this.fileStorageService = fileStorageService;
     }
 
     public void onStart(Long chatId) {
@@ -86,7 +89,13 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
             cat.getDislikes()
         );
 
-        telegramApiService.sendPhotoWithCaption(chatId, cat.getPhotoBase64(), caption);
+        try {
+            byte[] photoBytes = fileStorageService.readPhoto(cat.getPhotoPath());
+            telegramApiService.sendPhoto(chatId, photoBytes, caption);
+        } catch (Exception e) {
+            LOGGER.error("Failed to load photo from file: {}", cat.getPhotoPath(), e);
+            telegramApiService.sendMessage(chatId, "Ошибка при загрузке фото котика.");
+        }
     }
 
     private void sendGetMyCatsRequest(Long userId) {

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
 import com.samb1232.urfu_java_bot.constants.TextFields;
-import com.samb1232.urfu_java_bot.dto.AddCatMessage;
+import com.samb1232.common.dto.AddCatMessage;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.dto.UserMessage;

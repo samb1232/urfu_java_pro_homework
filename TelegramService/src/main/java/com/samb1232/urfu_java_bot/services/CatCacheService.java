@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
-import com.samb1232.urfu_java_bot.dto.CatInfo;
+import com.samb1232.common.dto.CatInfo;
 
 @Service
 public class CatCacheService {

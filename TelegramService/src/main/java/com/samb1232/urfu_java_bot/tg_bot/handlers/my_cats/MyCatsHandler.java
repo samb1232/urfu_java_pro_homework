@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
-import com.samb1232.urfu_java_bot.dto.CatInfo;
-import com.samb1232.urfu_java_bot.dto.GetMyCatsMessage;
+import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.messaging.RabbitMqService;

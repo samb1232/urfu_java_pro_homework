@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samb1232.catservice.database.DBService;
 import com.samb1232.catservice.database.entities.Cat;
-import com.samb1232.catservice.dto.AddCatMessage;
-import com.samb1232.catservice.dto.CatInfo;
-import com.samb1232.catservice.dto.GetMyCatsMessage;
-import com.samb1232.catservice.dto.MyCatsResponse;
-import com.samb1232.catservice.dto.TGUser;
+import com.samb1232.common.dto.AddCatMessage;
+import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.GetMyCatsMessage;
+import com.samb1232.common.dto.MyCatsResponse;
+import com.samb1232.common.dto.TGUser;
 
 @Service
 public class RabbitMqListenerService {
@@ -80,8 +80,8 @@ public class RabbitMqListenerService {
 
             List<CatInfo> catInfoList = userCats.stream()
                     .map(cat -> {
-                        long likes = dbService.getLikesCount(cat.getCatId());
-                        long dislikes = dbService.getDislikesCount(cat.getCatId());
+                        int likes = dbService.getLikesCount(cat.getCatId());
+                        int dislikes = dbService.getDislikesCount(cat.getCatId());
                         return new CatInfo(
                                 cat.getCatId(),
                                 cat.getName(),

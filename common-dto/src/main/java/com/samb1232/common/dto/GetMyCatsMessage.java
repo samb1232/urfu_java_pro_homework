@@ -1,7 +1,10 @@
-package com.samb1232.urfu_java_bot.dto;
+package com.samb1232.common.dto;
 
 public class GetMyCatsMessage {
-    private final Long userId;
+    private Long userId;
+
+    public GetMyCatsMessage() {
+    }
 
     public GetMyCatsMessage(Long userId) {
         this.userId = userId;
@@ -9,5 +12,9 @@ public class GetMyCatsMessage {
 
     public Long getUserId() {
         return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

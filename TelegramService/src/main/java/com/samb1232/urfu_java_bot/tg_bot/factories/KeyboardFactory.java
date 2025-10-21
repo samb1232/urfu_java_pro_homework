@@ -8,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 
 import com.samb1232.urfu_java_bot.constants.ButtonNames;
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
-import com.samb1232.urfu_java_bot.dto.CatInfo;
+import com.samb1232.common.dto.CatInfo;
 
 public class KeyboardFactory {
 

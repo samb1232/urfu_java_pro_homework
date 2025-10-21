@@ -14,8 +14,8 @@ public interface CatReactionRepository extends JpaRepository<CatReaction, Long> 
     boolean existsByUserUserIdAndCatCatId(Long userId, Long catId);
     
     @Query("SELECT COUNT(cr) FROM CatReaction cr WHERE cr.cat.catId = :catId AND cr.reaction = 'LIKE'")
-    long countLikesByCatId(@Param("catId") Long catId);
+    int countLikesByCatId(@Param("catId") Long catId);
     
     @Query("SELECT COUNT(cr) FROM CatReaction cr WHERE cr.cat.catId = :catId AND cr.reaction = 'DISLIKE'")
-    long countDislikesByCatId(@Param("catId") Long catId);
+    int countDislikesByCatId(@Param("catId") Long catId);
 }

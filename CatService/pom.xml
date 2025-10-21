@@ -21,6 +21,13 @@
     </properties>
 
     <dependencies>
+        <!-- Common DTO module -->
+        <dependency>
+            <groupId>com.samb1232</groupId>
+            <artifactId>common-dto</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>

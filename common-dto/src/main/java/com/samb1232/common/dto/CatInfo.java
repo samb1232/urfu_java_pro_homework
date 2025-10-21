@@ -1,16 +1,16 @@
-package com.samb1232.catservice.dto;
+package com.samb1232.common.dto;
 
 public class CatInfo {
     private Long id;
     private String name;
     private String photoPath;
-    private Long likes;
-    private Long dislikes;
+    private Integer likes;
+    private Integer dislikes;
 
     public CatInfo() {
     }
 
-    public CatInfo(Long id, String name, String photoPath, Long likes, Long dislikes) {
+    public CatInfo(Long id, String name, String photoPath, Integer likes, Integer dislikes) {
         this.id = id;
         this.name = name;
         this.photoPath = photoPath;
@@ -42,19 +42,19 @@ public class CatInfo {
         this.photoPath = photoPath;
     }
 
-    public Long getLikes() {
+    public Integer getLikes() {
         return likes;
     }
 
-    public void setLikes(Long likes) {
+    public void setLikes(Integer likes) {
         this.likes = likes;
     }
 
-    public Long getDislikes() {
+    public Integer getDislikes() {
         return dislikes;
     }
 
-    public void setDislikes(Long dislikes) {
+    public void setDislikes(Integer dislikes) {
         this.dislikes = dislikes;
     }
 }

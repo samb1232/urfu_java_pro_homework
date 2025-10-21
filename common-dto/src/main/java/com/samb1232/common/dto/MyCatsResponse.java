@@ -1,4 +1,4 @@
-package com.samb1232.catservice.dto;
+package com.samb1232.common.dto;
 
 import java.util.List;
 

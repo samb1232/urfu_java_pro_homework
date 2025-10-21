@@ -7,9 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.samb1232.urfu_java_bot.dto.CatInfo;
-import com.samb1232.urfu_java_bot.dto.MyCatsResponse;
+import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.MyCatsResponse;
 import com.samb1232.urfu_java_bot.services.CatCacheService;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
 import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
@@ -20,20 +19,17 @@ public class RabbitMqListenerService {
 
     private final CatCacheService catCacheService;
     private final TelegramApiService telegramApiService;
-    private final ObjectMapper objectMapper;
 
     public RabbitMqListenerService(CatCacheService catCacheService, TelegramApiService telegramApiService) {
         this.catCacheService = catCacheService;
         this.telegramApiService = telegramApiService;
-        this.objectMapper = new ObjectMapper();
     }
 
     @RabbitListener(queues = "${app.rabbitmq.my_cats_response_queue}")
-    public void handleMyCatsResponse(String message) {
-        LOGGER.info("Received message from my cats response queue: {}", message);
+    public void handleMyCatsResponse(MyCatsResponse myCatsResponse) {
+        LOGGER.info("Received message from my cats response queue: {}", myCatsResponse);
 
         try {
-            MyCatsResponse myCatsResponse = objectMapper.readValue(message, MyCatsResponse.class);
             Long userId = myCatsResponse.getUserId();
             List<CatInfo> cats = myCatsResponse.getCats();
 
@@ -53,7 +49,7 @@ public class RabbitMqListenerService {
             LOGGER.info("Successfully processed my cats response for user: {}", userId);
 
         } catch (Exception e) {
-            LOGGER.error("Failed to process my cats response message: {}", message, e);
+            LOGGER.error("Failed to process my cats response", e);
         }
     }
 

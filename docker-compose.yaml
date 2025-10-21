@@ -9,7 +9,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   bot:
-    build: ./TelegramService
+    build:
+      context: .
+      dockerfile: ./TelegramService/Dockerfile
     depends_on:
       - rabbitmq
     env_file:
@@ -23,7 +25,9 @@ services:
       - cat_photos:/app/photos
 
   catservice:
-    build: ./CatService
+    build:
+      context: .
+      dockerfile: ./CatService/Dockerfile
     depends_on:
       - postgres
       - rabbitmq

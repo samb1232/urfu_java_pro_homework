@@ -20,7 +20,7 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.StateMachineService;
 import com.samb1232.urfu_java_bot.utils.TelegramUpdateUtils;
 
 @Component
-public class MainBot extends TelegramLongPollingBot {
+public class MainBot extends TelegramLongPollingBot implements TelegramBotExecutor {
     private static final Logger LOGGER = LoggerFactory.getLogger(MainBot.class);
 
     private final StateMachineService stateMachineService;

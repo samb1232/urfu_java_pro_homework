@@ -29,10 +29,10 @@ import com.samb1232.urfu_java_bot.dto.UserMessage;
 @Service
 public class TelegramApiService {
     private static final Logger LOGGER = LoggerFactory.getLogger(TelegramApiService.class);
-    private final MainBot mainBot;
+    private final TelegramBotExecutor botExecutor;
 
-    public TelegramApiService(@Lazy MainBot mainBot) {
-        this.mainBot = mainBot;
+    public TelegramApiService(@Lazy TelegramBotExecutor botExecutor) {
+        this.botExecutor = botExecutor;
     }
 
     public void sendMessage(Long chatId, String text) {
@@ -40,7 +40,7 @@ public class TelegramApiService {
         var sendMessage = new SendMessage(chatIdStr, text);
 
         try {
-            mainBot.execute(sendMessage);
+            botExecutor.execute(sendMessage);
         } catch (TelegramApiException e) {
             LOGGER.error("Error sending message", e);
         }
@@ -90,7 +90,7 @@ public class TelegramApiService {
         message.setReplyMarkup(keyboard);
 
         try {
-            mainBot.execute(message);
+            botExecutor.execute(message);
         } catch (TelegramApiException e) {
             LOGGER.error("Error sending message with keyboard", e);
         }
@@ -101,7 +101,7 @@ public class TelegramApiService {
         answer.setCallbackQueryId(callbackQueryId);
 
         try {
-            mainBot.execute(answer);
+            botExecutor.execute(answer);
         } catch (TelegramApiException e) {
             LOGGER.error("Error answering callback query", e);
         }
@@ -120,9 +120,9 @@ public class TelegramApiService {
     private String getFileUrlByFileId(String fileId) throws TelegramApiException {
         GetFile getFile = new GetFile();
         getFile.setFileId(fileId);
-        org.telegram.telegrambots.meta.api.objects.File fileObj = mainBot.execute(getFile);
+        org.telegram.telegrambots.meta.api.objects.File fileObj = botExecutor.execute(getFile);
         String filePath = fileObj.getFilePath();
-        return "https://api.telegram.org/file/bot" + mainBot.getBotToken() + "/" + filePath;
+        return "https://api.telegram.org/file/bot" + botExecutor.getBotToken() + "/" + filePath;
     }
 
     private byte[] downloadFileFromUrl(String fileUrl) throws Exception {
@@ -148,7 +148,7 @@ public class TelegramApiService {
                 sendPhoto.setCaption(caption);
             }
 
-            mainBot.execute(sendPhoto);
+            botExecutor.execute(sendPhoto);
         } catch (Exception e) {
             LOGGER.error("Error sending photo", e);
         }

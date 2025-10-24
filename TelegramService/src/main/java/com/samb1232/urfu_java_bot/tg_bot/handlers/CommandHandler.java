@@ -4,7 +4,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.TextFields;
-import com.samb1232.urfu_java_bot.dto.TGUser;
+import com.samb1232.common.dto.TGUser;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;

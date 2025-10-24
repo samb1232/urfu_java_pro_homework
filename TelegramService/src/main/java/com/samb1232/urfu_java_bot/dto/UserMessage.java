@@ -1,5 +1,7 @@
 package com.samb1232.urfu_java_bot.dto;
 
+import com.samb1232.common.dto.TGUser;
+
 
 public class UserMessage {
     private final String text;

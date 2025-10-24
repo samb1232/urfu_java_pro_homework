@@ -4,13 +4,14 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
-import com.samb1232.urfu_java_bot.constants.TextFields;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
-import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UnknownCallbackQueryHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
+import com.samb1232.urfu_java_bot.tg_bot.handlers.add_cat.AddCatHandler;
+import com.samb1232.urfu_java_bot.tg_bot.handlers.my_cats.MyCatsHandler;
+import com.samb1232.urfu_java_bot.tg_bot.handlers.view_cats.ViewCatsHandler;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 
@@ -18,10 +19,21 @@ import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotState;
 public class MainMenuHandler extends UnknownCallbackQueryHandler implements UpdateHandler {
 
     private final TelegramApiService telegramApiService;
+    private final AddCatHandler addCatHandler;
+    private final MyCatsHandler myCatsHandler;
+    private final ViewCatsHandler viewCatsHandler;
 
-    public MainMenuHandler(TelegramApiService telegramApiService) {
+    public MainMenuHandler(
+        TelegramApiService telegramApiService, 
+        AddCatHandler addCatHandler,
+        MyCatsHandler myCatsHandler,
+        ViewCatsHandler viewCatsHandler
+    ) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
+        this.addCatHandler = addCatHandler;
+        this.myCatsHandler = myCatsHandler;
+        this.viewCatsHandler = viewCatsHandler;
     }
 
     @Override
@@ -37,20 +49,18 @@ public class MainMenuHandler extends UnknownCallbackQueryHandler implements Upda
 
         switch (callbackData) {
             case MenuCallbackData.MY_CATS_CALLBACK -> {
-                telegramApiService.sendMessage(chatId, "Вы выбрали: Мои котики");
                 stateMachine.sendEvent(BotEvent.MY_CATS_COMMAND);
+                myCatsHandler.onStart(chatId);
             }
 
             case MenuCallbackData.VIEW_CATS_CALLBACK -> {
-                telegramApiService.sendMessage(chatId, "Вы выбрали: Смотреть котиков");
                 stateMachine.sendEvent(BotEvent.VIEW_CATS_COMMAND);
+                viewCatsHandler.onStart(chatId);
             }
 
             case MenuCallbackData.ADD_CAT_CALLBACK -> {
                 stateMachine.sendEvent(BotEvent.ADD_CAT_COMMAND);
-                telegramApiService.sendMessageWithKeyboard(chatId,
-                        TextFields.ADD_CAT_SEND_PHOTO_TEXT,
-                        KeyboardFactory.createBackToMainMenuKeyboard());
+                addCatHandler.onStart(chatId);
             }
 
             default -> processUnkownCallbackQuery(callbackQuery, stateMachine);

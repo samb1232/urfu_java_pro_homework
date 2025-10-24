@@ -14,7 +14,7 @@ import com.samb1232.catservice.database.entities.User;
 import com.samb1232.catservice.database.repos.CatReactionRepository;
 import com.samb1232.catservice.database.repos.CatRepository;
 import com.samb1232.catservice.database.repos.UserRepository;
-import com.samb1232.catservice.dto.TGUser;
+import com.samb1232.common.dto.TGUser;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -37,11 +37,12 @@ public class DBService {
     }
 
     @Transactional
-    public Cat createCat(Long userId, String photoPath) {
+    public Cat createCat(Long userId, String photoPath, String catName) {
         User user = getUserById(userId);
         Cat cat = new Cat();
         cat.setUser(user);
         cat.setPhotoPath(photoPath);
+        cat.setName(catName != null && !catName.isEmpty() ? catName : "Unnamed Cat");
         return catRepository.save(cat);
     }
 
@@ -107,16 +108,21 @@ public class DBService {
         }
     }               
 
-    public long getLikesCount(Long catId) {
+    public int getLikesCount(Long catId) {
         return catReactionRepository.countLikesByCatId(catId);
     }
 
-    public long getDislikesCount(Long catId) {
+    public int getDislikesCount(Long catId) {
         return catReactionRepository.countDislikesByCatId(catId);
     }
 
     public Optional<CatReaction.ReactionType> getUserReaction(Long userId, Long catId) {
         return catReactionRepository.findByUserUserIdAndCatCatId(userId, catId)
                 .map(CatReaction::getReaction);
+    }
+    
+    @Transactional
+    public List<Cat> getCatsWithReactionsByUser(Long userId) {
+        return catRepository.findByUserUserId(userId);
     }
 }

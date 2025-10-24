@@ -1,3 +1,6 @@
+networks:
+  kittyBotNetwork:
+
 services:
   postgres:
     image: postgres:14
@@ -7,13 +10,16 @@ services:
       POSTGRES_PASSWORD: your_password
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      kittyBotNetwork:
 
   bot:
     build:
       context: .
       dockerfile: ./TelegramService/Dockerfile
     depends_on:
-      - rabbitmq
+      rabbitmq:
+        condition: service_healthy
     env_file:
       - .env
     environment:
@@ -23,14 +29,18 @@ services:
       - SPRING_RABBITMQ_PASSWORD=guest
     volumes:
       - cat_photos:/app/photos
+    networks:
+      kittyBotNetwork:
 
   catservice:
     build:
       context: .
       dockerfile: ./CatService/Dockerfile
     depends_on:
-      - postgres
-      - rabbitmq
+      postgres:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/catgram_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -44,11 +54,21 @@ services:
       - SPRING_RABBITMQ_PASSWORD=guest
     volumes:
       - cat_photos:/app/photos
+    networks:
+      kittyBotNetwork:
 
   rabbitmq:
-      image: rabbitmq:3-management
-      ports:
-        - "15672:15672"
+    image: rabbitmq:3-management
+    ports:
+      - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 20s
+    networks:
+      kittyBotNetwork:
 
 
 volumes:

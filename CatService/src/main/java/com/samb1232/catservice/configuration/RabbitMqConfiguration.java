@@ -19,6 +19,9 @@ public class RabbitMqConfiguration {
     @Value("${app.rabbitmq.my_cats_response_queue}")
     private String myCatsResponseQueueName;
 
+    @Value("${app.rabbitmq.delete_cat_request_queue}")
+    private String deleteCatRequestQueueName;
+
     @Bean
     public Queue addCatRequestQueue() {
         return new Queue(addCatRequestQueueName, true);
@@ -32,6 +35,11 @@ public class RabbitMqConfiguration {
     @Bean
     public Queue myCatsResponseQueue() {
         return new Queue(myCatsResponseQueueName, true);
+    }
+
+    @Bean
+    public Queue deleteCatRequestQueue() {
+        return new Queue(deleteCatRequestQueueName, true);
     }
 
     @Bean

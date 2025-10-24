@@ -6,6 +6,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.DeleteCatMessage;
 import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
@@ -115,7 +116,8 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
     }
 
     private void deleteCat(Long chatId, Long catId) {
-        String payload = String.format("{\"catId\":%d}", catId);
+        DeleteCatMessage deleteCatMessage = new DeleteCatMessage(catId);
+        String payload = String.format("{\"catId\":%d}", deleteCatMessage.getCatId());
         rabbitMqService.sendToDeleteCatRequestQueue(payload);
         telegramApiService.sendMessage(chatId, "Котик удален");
         LOGGER.info("Sent delete cat request for cat ID: {}", catId);

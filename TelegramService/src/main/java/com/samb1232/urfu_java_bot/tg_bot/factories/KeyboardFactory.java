@@ -6,9 +6,9 @@ import java.util.List;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
+import com.samb1232.common.dto.CatInfo;
 import com.samb1232.urfu_java_bot.constants.ButtonNames;
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
-import com.samb1232.common.dto.CatInfo;
 
 public class KeyboardFactory {
 
@@ -64,4 +64,22 @@ public class KeyboardFactory {
         keyboard.setKeyboard(rows);
         return keyboard;
     }
+
+
+    public static InlineKeyboardMarkup createDeleteCatKeyboard(Long catId) {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new java.util.ArrayList<>();
+
+        InlineKeyboardButton deleteButton = InlineKeyboardButton.builder()
+                .text("🗑️ Удалить котика")
+                .callbackData("delete_cat_" + catId)
+                .build();
+        List<InlineKeyboardButton> row = new ArrayList<>();
+        row.add(deleteButton);
+        rows.add(row);
+        keyboard.setKeyboard(rows);
+        return keyboard;
+    }
+
+
 }

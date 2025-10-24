@@ -6,6 +6,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.DeleteCatMessage;
 import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
@@ -13,6 +14,7 @@ import com.samb1232.urfu_java_bot.messaging.RabbitMqService;
 import com.samb1232.urfu_java_bot.services.CatCacheService;
 import com.samb1232.urfu_java_bot.services.FileStorageService;
 import com.samb1232.urfu_java_bot.tg_bot.TelegramApiService;
+import com.samb1232.urfu_java_bot.tg_bot.factories.KeyboardFactory;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UnknownCallbackQueryHandler;
 import com.samb1232.urfu_java_bot.tg_bot.handlers.UpdateHandler;
 import com.samb1232.urfu_java_bot.tg_bot.statemachine.BotEvent;
@@ -65,6 +67,14 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
                 LOGGER.error("Invalid cat ID in callback data: {}", callbackData, e);
                 telegramApiService.sendMessage(chatId, "Ошибка при отображении котика");
             }
+        } else if (callbackData.startsWith("delete_cat_")) {
+            try {
+                Long catId = Long.valueOf(callbackData.substring("delete_cat_".length()));
+                deleteCat(chatId, catId);
+            } catch (NumberFormatException e) {
+                LOGGER.error("Invalid cat ID in delete callback data: {}", callbackData, e);
+                telegramApiService.sendMessage(chatId, "Ошибка при удалении котика");
+            }
         } else {
             processUnkownCallbackQuery(callbackQuery, stateMachine);
         }
@@ -91,7 +101,7 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
 
         try {
             byte[] photoBytes = fileStorageService.readPhoto(cat.getPhotoPath());
-            telegramApiService.sendPhoto(chatId, photoBytes, caption);
+            telegramApiService.sendPhoto(chatId, photoBytes, caption, KeyboardFactory.createDeleteCatKeyboard(catId));
         } catch (Exception e) {
             LOGGER.error("Failed to load photo from file: {}", cat.getPhotoPath(), e);
             telegramApiService.sendMessage(chatId, "Ошибка при загрузке фото котика.");
@@ -105,4 +115,11 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
         LOGGER.info("Sent get my cats request for user: {}", userId);
     }
 
+    private void deleteCat(Long chatId, Long catId) {
+        DeleteCatMessage deleteCatMessage = new DeleteCatMessage(catId);
+        String payload = String.format("{\"catId\":%d}", deleteCatMessage.getCatId());
+        rabbitMqService.sendToDeleteCatRequestQueue(payload);
+        telegramApiService.sendMessage(chatId, "Котик удален");
+        LOGGER.info("Sent delete cat request for cat ID: {}", catId);
+    }
 }

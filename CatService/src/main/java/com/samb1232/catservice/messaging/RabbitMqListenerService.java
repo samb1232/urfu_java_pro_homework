@@ -13,6 +13,7 @@ import com.samb1232.catservice.database.DBService;
 import com.samb1232.catservice.database.entities.Cat;
 import com.samb1232.common.dto.AddCatMessage;
 import com.samb1232.common.dto.CatInfo;
+import com.samb1232.common.dto.DeleteCatMessage;
 import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.common.dto.MyCatsResponse;
 import com.samb1232.common.dto.TGUser;
@@ -99,6 +100,25 @@ public class RabbitMqListenerService {
 
         } catch (Exception e) {
             LOGGER.error("Failed to process get my cats message: {}", message, e);
+        }
+    }
+
+    @RabbitListener(queues = "${app.rabbitmq.delete_cat_request_queue}")
+    public void handleDeleteCatRequest(String message) {
+        LOGGER.info("Received message from delete cat request queue: {}", message);
+
+        try {
+            DeleteCatMessage deleteCatMessage = objectMapper.readValue(message, DeleteCatMessage.class);
+            Long catId = deleteCatMessage.getCatId();
+
+            LOGGER.info("Processing DeleteCatRequest - catId: {}", catId);
+
+            dbService.deleteCat(catId);
+
+            LOGGER.info("Successfully deleted cat with ID: {}", catId);
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to process delete cat request: {}", message, e);
         }
     }
 }

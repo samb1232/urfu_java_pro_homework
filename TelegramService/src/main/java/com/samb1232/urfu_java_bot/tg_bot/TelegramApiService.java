@@ -138,6 +138,10 @@ public class TelegramApiService {
     }
 
     public void sendPhoto(Long chatId, byte[] photoBytes, String caption) {
+        sendPhoto(chatId, photoBytes, caption, null);
+    }
+
+    public void sendPhoto(Long chatId, byte[] photoBytes, String caption, InlineKeyboardMarkup keyboard) {
         try {
             ByteArrayInputStream inputStream = new java.io.ByteArrayInputStream(photoBytes);
 
@@ -146,6 +150,9 @@ public class TelegramApiService {
             sendPhoto.setPhoto(new InputFile(inputStream, "cat.jpg"));
             if (caption != null) {
                 sendPhoto.setCaption(caption);
+            }
+            if (keyboard != null) {
+                sendPhoto.setReplyMarkup(keyboard);
             }
 
             botExecutor.execute(sendPhoto);

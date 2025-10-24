@@ -82,8 +82,8 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
 
         String caption = String.format(
             "🐱 %s\n\n" +
-            "👍 Лайков: %d\n" +
-            "👎 Дизлайков: %d",
+            "👍: %d\n" +
+            "👎: %d",
             cat.getName(),
             cat.getLikes(),
             cat.getDislikes()

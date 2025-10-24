@@ -8,9 +8,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
+import com.samb1232.common.dto.AddCatMessage;
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
 import com.samb1232.urfu_java_bot.constants.TextFields;
-import com.samb1232.common.dto.AddCatMessage;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.dto.UserMessage;
@@ -82,20 +82,29 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
         boolean waitingForName = waitingForNameByChatId.getOrDefault(chatId, Boolean.FALSE);
 
         if (!waitingForName) {
-            if (userMessage.getPhotoFileId() != null) {
-                byte[] photoBytes = telegramApiService.downloadFile(userMessage.getPhotoFileId());
-                if (photoBytes != null) {
-                    try {
-                        String photoPath = fileStorageService.savePhoto(photoBytes);
-                        photoPathByChatId.put(chatId, photoPath);
-                    } catch (Exception e) {
-                        LOGGER.error("Failed to save photo", e);
-                        telegramApiService.sendMessageWithKeyboard(chatId, "Ошибка при сохранении фото. Попробуйте ещё раз.",
-                                KeyboardFactory.createBackToMainMenuKeyboard());
-                        return;
-                    }
-                }
+            if (userMessage.getPhotoFileId() == null) {
+                telegramApiService.sendMessageWithKeyboard(chatId, "Пожалуйста, отправьте фото кота.",
+                        KeyboardFactory.createBackToMainMenuKeyboard());
+                return;
             }
+
+            byte[] photoBytes = telegramApiService.downloadFile(userMessage.getPhotoFileId());
+            if (photoBytes == null) {
+                telegramApiService.sendMessageWithKeyboard(chatId, "Ошибка при загрузке фото. Попробуйте ещё раз.",
+                        KeyboardFactory.createBackToMainMenuKeyboard());
+                return;
+            }
+
+            try {
+                String photoPath = fileStorageService.savePhoto(photoBytes);
+                photoPathByChatId.put(chatId, photoPath);
+            } catch (Exception e) {
+                LOGGER.error("Failed to save photo", e);
+                telegramApiService.sendMessageWithKeyboard(chatId, "Ошибка при сохранении фото. Попробуйте ещё раз.",
+                        KeyboardFactory.createBackToMainMenuKeyboard());
+                return;
+            }
+
             telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT,
                     KeyboardFactory.createBackToMainMenuKeyboard());
             waitingForNameByChatId.put(chatId, Boolean.TRUE);

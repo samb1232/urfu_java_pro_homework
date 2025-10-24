@@ -19,7 +19,6 @@ public abstract class UnknownCallbackQueryHandler {
     
     protected void processUnkownCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
         Long chatId = callbackQuery.getChatId();
-        telegramApiService.sendMessage(chatId, TextFields.UNKNOWN_CALLBACK_TEXT);
         stateMachine.sendEvent(BotEvent.START);
 
         telegramApiService.sendMessageWithKeyboard(chatId, TextFields.MAIN_MENU_TEXT, KeyboardFactory.createMainMenuKeyboard());

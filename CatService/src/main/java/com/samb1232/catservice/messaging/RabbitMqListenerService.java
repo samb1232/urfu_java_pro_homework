@@ -136,7 +136,7 @@ public class RabbitMqListenerService {
 
             LOGGER.info("Processing ViewRandomCatRequest - userId: {}", userId);
 
-            dbService.getRandomCat().ifPresentOrElse(
+            dbService.getRandomCatForUser(userId).ifPresentOrElse(
                 cat -> {
                     int likes = dbService.getLikesCount(cat.getCatId());
                     int dislikes = dbService.getDislikesCount(cat.getCatId());

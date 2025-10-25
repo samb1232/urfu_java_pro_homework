@@ -11,9 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.samb1232.catservice.database.entities.Cat;
 import com.samb1232.catservice.database.entities.CatReaction;
 import com.samb1232.catservice.database.entities.User;
+import com.samb1232.catservice.database.entities.ViewedCat;
 import com.samb1232.catservice.database.repos.CatReactionRepository;
 import com.samb1232.catservice.database.repos.CatRepository;
 import com.samb1232.catservice.database.repos.UserRepository;
+import com.samb1232.catservice.database.repos.ViewedCatRepository;
 import com.samb1232.common.dto.TGUser;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -24,16 +26,19 @@ public class DBService {
     private final CatRepository catRepository;
     private final UserRepository userRepository;
     private final CatReactionRepository catReactionRepository;
+    private final ViewedCatRepository viewedCatRepository;
 
     @Autowired
     public DBService(
-        CatRepository catRepository, 
-        UserRepository userRepository, 
-        CatReactionRepository catReactionRepository
+        CatRepository catRepository,
+        UserRepository userRepository,
+        CatReactionRepository catReactionRepository,
+        ViewedCatRepository viewedCatRepository
         ) {
         this.catRepository = catRepository;
         this.userRepository = userRepository;
         this.catReactionRepository = catReactionRepository;
+        this.viewedCatRepository = viewedCatRepository;
     }
 
     @Transactional
@@ -126,5 +131,34 @@ public class DBService {
 
     public Optional<Cat> getRandomCat() {
         return catRepository.findRandomCat();
+    }
+
+    @Transactional
+    public Optional<Cat> getRandomCatForUser(Long userId) {
+        List<Long> viewedCatIds = viewedCatRepository.findViewedCatIdsByUserId(userId);
+
+        long totalCats = catRepository.count();
+
+        if (viewedCatIds.size() >= totalCats && totalCats > 0) {
+            viewedCatRepository.deleteAllByUserId(userId);
+            viewedCatIds.clear();
+        }
+
+        Optional<Cat> randomCat;
+        if (viewedCatIds.isEmpty()) {
+            randomCat = catRepository.findRandomCat();
+        } else {
+            randomCat = catRepository.findRandomCatExcluding(viewedCatIds);
+        }
+
+        if (randomCat.isPresent()) {
+            User user = getUserById(userId);
+            ViewedCat viewedCat = new ViewedCat();
+            viewedCat.setUser(user);
+            viewedCat.setCat(randomCat.get());
+            viewedCatRepository.save(viewedCat);
+        }
+
+        return randomCat;
     }
 }

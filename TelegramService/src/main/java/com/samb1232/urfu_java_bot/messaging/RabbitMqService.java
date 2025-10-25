@@ -14,15 +14,18 @@ public class RabbitMqService {
     private final String queueName;
     private final String getMyCatsQueueName;
     private final String deleteCatRequestQueueName;
+    private final String viewRandomCatRequestQueueName;
 
     public RabbitMqService(RabbitTemplate rabbitTemplate,
                            @Value("${app.rabbitmq.add_cat_request_queue}") String queueName,
                            @Value("${app.rabbitmq.get_my_cats_queue}") String getMyCatsQueueName,
-                           @Value("${app.rabbitmq.delete_cat_request_queue}") String deleteCatRequestQueueName) {
+                           @Value("${app.rabbitmq.delete_cat_request_queue}") String deleteCatRequestQueueName,
+                           @Value("${app.rabbitmq.view_random_cat_request_queue}") String viewRandomCatRequestQueueName) {
         this.rabbitTemplate = rabbitTemplate;
         this.queueName = queueName;
         this.getMyCatsQueueName = getMyCatsQueueName;
         this.deleteCatRequestQueueName = deleteCatRequestQueueName;
+        this.viewRandomCatRequestQueueName = viewRandomCatRequestQueueName;
     }
 
     public void sendToQueue(String message) {
@@ -35,6 +38,10 @@ public class RabbitMqService {
 
     public void sendToDeleteCatRequestQueue(String message) {
         sendToQueue(deleteCatRequestQueueName, message);
+    }
+
+    public void sendToViewRandomCatQueue(String message) {
+        sendToQueue(viewRandomCatRequestQueueName, message);
     }
 
     public void sendToQueue(String queueName, String message) {

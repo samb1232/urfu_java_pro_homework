@@ -11,12 +11,16 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.samb1232.catservice.database.DBService;
 import com.samb1232.catservice.database.entities.Cat;
+import com.samb1232.catservice.database.entities.CatReaction;
 import com.samb1232.common.dto.AddCatMessage;
 import com.samb1232.common.dto.CatInfo;
 import com.samb1232.common.dto.DeleteCatMessage;
 import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.common.dto.MyCatsResponse;
+import com.samb1232.common.dto.SetCatReactionMessage;
 import com.samb1232.common.dto.TGUser;
+import com.samb1232.common.dto.ViewRandomCatRequestMessage;
+import com.samb1232.common.dto.ViewRandomCatResponseMessage;
 
 @Service
 public class RabbitMqListenerService {
@@ -119,6 +123,67 @@ public class RabbitMqListenerService {
 
         } catch (Exception e) {
             LOGGER.error("Failed to process delete cat request: {}", message, e);
+        }
+    }
+
+    @RabbitListener(queues = "${app.rabbitmq.view_random_cat_request_queue}")
+    public void handleViewRandomCatRequest(String message) {
+        LOGGER.info("Received message from view random cat request queue: {}", message);
+
+        try {
+            ViewRandomCatRequestMessage viewRandomCatRequestMessage = objectMapper.readValue(message, ViewRandomCatRequestMessage.class);
+            Long userId = viewRandomCatRequestMessage.getUserId();
+
+            LOGGER.info("Processing ViewRandomCatRequest - userId: {}", userId);
+
+            dbService.getRandomCat().ifPresentOrElse(
+                cat -> {
+                    int likes = dbService.getLikesCount(cat.getCatId());
+                    int dislikes = dbService.getDislikesCount(cat.getCatId());
+
+                    ViewRandomCatResponseMessage response = new ViewRandomCatResponseMessage(
+                        userId,
+                        cat.getCatId(),
+                        cat.getName(),
+                        cat.getPhotoPath(),
+                        likes,
+                        dislikes
+                    );
+
+                    rabbitMqSenderService.sendToViewRandomCatResponseQueue(response);
+                    LOGGER.info("Successfully sent random cat (ID: {}) for user: {}", cat.getCatId(), userId);
+                },
+                () -> {
+                    LOGGER.warn("No cats available in database for user: {}", userId);
+                }
+            );
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to process view random cat request: {}", message, e);
+        }
+    }
+
+    @RabbitListener(queues = "${app.rabbitmq.set_cat_reaction_queue}")
+    public void handleSetCatReaction(String message) {
+        LOGGER.info("Received message from set cat reaction queue: {}", message);
+
+        try {
+            SetCatReactionMessage reactionMessage = objectMapper.readValue(message, SetCatReactionMessage.class);
+            Long userId = reactionMessage.getUserId();
+            Long catId = reactionMessage.getCatId();
+            String action = reactionMessage.getAction();
+
+            LOGGER.info("Processing SetCatReaction - userId: {}, catId: {}, action: {}", userId, catId, action);
+
+            CatReaction.ReactionType reactionType = CatReaction.ReactionType.valueOf(action);
+            dbService.setReaction(userId, catId, reactionType);
+
+            LOGGER.info("Successfully set reaction for user {} on cat {}: {}", userId, catId, action);
+
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Invalid action type in message: {}", message, e);
+        } catch (Exception e) {
+            LOGGER.error("Failed to process set cat reaction: {}", message, e);
         }
     }
 }

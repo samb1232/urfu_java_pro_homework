@@ -81,5 +81,38 @@ public class KeyboardFactory {
         return keyboard;
     }
 
+    public static InlineKeyboardMarkup createViewRandomCatKeyboard(Long catId, int likesCount, int dislikesCount) {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+
+        List<InlineKeyboardButton> firstRow = new ArrayList<>();
+
+        InlineKeyboardButton likeButton = InlineKeyboardButton.builder()
+                .text("👍 " + likesCount)
+                .callbackData(MenuCallbackData.LIKE_CAT_PREFIX + catId)
+                .build();
+
+        InlineKeyboardButton dislikeButton = InlineKeyboardButton.builder()
+                .text("👎 " + dislikesCount)
+                .callbackData(MenuCallbackData.DISLIKE_CAT_PREFIX + catId)
+                .build();
+
+        firstRow.add(likeButton);
+        firstRow.add(dislikeButton);
+        rows.add(firstRow);
+
+        List<InlineKeyboardButton> secondRow = new ArrayList<>();
+
+        InlineKeyboardButton nextButton = InlineKeyboardButton.builder()
+                .text("Далее ➡️")
+                .callbackData(MenuCallbackData.NEXT_RANDOM_CAT)
+                .build();
+
+        secondRow.add(nextButton);
+        rows.add(secondRow);
+
+        keyboard.setKeyboard(rows);
+        return keyboard;
+    }
 
 }

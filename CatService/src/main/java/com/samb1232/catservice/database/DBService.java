@@ -89,9 +89,7 @@ public class DBService {
         
         if (existingReaction.isPresent()) {
             CatReaction reaction = existingReaction.get();
-            if (reaction.getReaction() == reactionType) {
-                catReactionRepository.delete(reaction);
-            } else {
+            if (reaction.getReaction() != reactionType) {
                 reaction.setReaction(reactionType);
                 catReactionRepository.save(reaction);
             }
@@ -124,5 +122,9 @@ public class DBService {
     @Transactional
     public List<Cat> getCatsWithReactionsByUser(Long userId) {
         return catRepository.findByUserUserId(userId);
+    }
+
+    public Optional<Cat> getRandomCat() {
+        return catRepository.findRandomCat();
     }
 }

@@ -25,6 +25,9 @@ public class RabbitMqConfiguration {
     @Value("${app.rabbitmq.view_random_cat_request_queue}")
     private String viewRandomCatRequestQueueName;
 
+    @Value("${app.rabbitmq.view_random_cat_response_queue}")
+    private String viewRandomCatResponseQueueName;
+
     @Bean
     public Queue addCatRequestQueue() {
         return new Queue(addCatRequestQueueName, true);
@@ -48,6 +51,11 @@ public class RabbitMqConfiguration {
     @Bean
     public Queue viewRandomCatRequestQueue() {
         return new Queue(viewRandomCatRequestQueueName, true);
+    }
+
+    @Bean
+    public Queue viewRandomCatResponseQueue() {
+        return new Queue(viewRandomCatResponseQueueName, true);
     }
 
     @Bean

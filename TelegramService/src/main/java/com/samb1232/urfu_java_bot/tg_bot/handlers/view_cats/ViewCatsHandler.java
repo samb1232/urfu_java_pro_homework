@@ -6,6 +6,7 @@ import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
 import com.samb1232.common.dto.ViewRandomCatRequestMessage;
+import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
 import com.samb1232.urfu_java_bot.dto.UserCallback;
 import com.samb1232.urfu_java_bot.messaging.RabbitMqService;
@@ -49,12 +50,46 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
 
     private void processCallbackQuery(UserCallback callbackQuery, StateMachine<BotState, BotEvent> stateMachine) {
         String callbackData = callbackQuery.getCallbackData();
+        Long chatId = callbackQuery.getChatId();
 
-        switch (callbackData) {
-            default -> processUnkownCallbackQuery(callbackQuery, stateMachine);
+        if (callbackData.startsWith(MenuCallbackData.LIKE_CAT_PREFIX)) {
+            handleLikeButton(callbackData, chatId);
+        } else if (callbackData.startsWith(MenuCallbackData.DISLIKE_CAT_PREFIX)) {
+            handleDislikeButton(callbackData, chatId);
+        } else if (callbackData.equals(MenuCallbackData.NEXT_RANDOM_CAT)) {
+            handleNextButton(chatId);
+        } else {
+            processUnkownCallbackQuery(callbackQuery, stateMachine);
         }
 
         telegramApiService.answerCallbackQuery(callbackQuery.getCallbackId());
+    }
+
+    private void handleLikeButton(String callbackData, Long chatId) {
+        try {
+            Long catId = Long.valueOf(callbackData.substring(MenuCallbackData.LIKE_CAT_PREFIX.length()));
+            LOGGER.info("User {} liked cat {}", chatId, catId);
+            // TODO: Implement like functionality (send reaction to queue)
+            telegramApiService.sendMessage(chatId, "❤️ Вам понравился котик!");
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid cat ID in like callback: {}", callbackData, e);
+        }
+    }
+
+    private void handleDislikeButton(String callbackData, Long chatId) {
+        try {
+            Long catId = Long.valueOf(callbackData.substring(MenuCallbackData.DISLIKE_CAT_PREFIX.length()));
+            LOGGER.info("User {} disliked cat {}", chatId, catId);
+            // TODO: Implement dislike functionality (send reaction to queue)
+            telegramApiService.sendMessage(chatId, "👎 Жаль, что котик не понравился");
+        } catch (NumberFormatException e) {
+            LOGGER.error("Invalid cat ID in dislike callback: {}", callbackData, e);
+        }
+    }
+
+    private void handleNextButton(Long chatId) {
+        LOGGER.info("User {} requested next random cat", chatId);
+        sendViewRandomCatRequest(chatId);
     }
 
 }

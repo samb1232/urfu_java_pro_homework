@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.stereotype.Service;
 
+import com.samb1232.common.dto.SetCatReactionMessage;
 import com.samb1232.common.dto.ViewRandomCatRequestMessage;
 import com.samb1232.urfu_java_bot.constants.MenuCallbackData;
 import com.samb1232.urfu_java_bot.dto.UpdateInfo;
@@ -69,7 +70,8 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
         try {
             Long catId = Long.valueOf(callbackData.substring(MenuCallbackData.LIKE_CAT_PREFIX.length()));
             LOGGER.info("User {} liked cat {}", chatId, catId);
-            // TODO: Implement like functionality (send reaction to queue)
+
+            sendCatReaction(chatId, catId, "LIKE");
             telegramApiService.sendMessage(chatId, "❤️ Вам понравился котик!");
         } catch (NumberFormatException e) {
             LOGGER.error("Invalid cat ID in like callback: {}", callbackData, e);
@@ -80,11 +82,22 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
         try {
             Long catId = Long.valueOf(callbackData.substring(MenuCallbackData.DISLIKE_CAT_PREFIX.length()));
             LOGGER.info("User {} disliked cat {}", chatId, catId);
-            // TODO: Implement dislike functionality (send reaction to queue)
+
+            sendCatReaction(chatId, catId, "DISLIKE");
             telegramApiService.sendMessage(chatId, "👎 Жаль, что котик не понравился");
         } catch (NumberFormatException e) {
             LOGGER.error("Invalid cat ID in dislike callback: {}", callbackData, e);
         }
+    }
+
+    private void sendCatReaction(Long userId, Long catId, String action) {
+        SetCatReactionMessage reactionMessage = new SetCatReactionMessage(userId, catId, action);
+        String payload = String.format("{\"userId\":%d,\"catId\":%d,\"action\":\"%s\"}",
+            reactionMessage.getUserId(),
+            reactionMessage.getCatId(),
+            reactionMessage.getAction());
+        rabbitMqService.sendToSetCatReactionQueue(payload);
+        LOGGER.info("Sent cat reaction: user={}, cat={}, action={}", userId, catId, action);
     }
 
     private void handleNextButton(Long chatId) {

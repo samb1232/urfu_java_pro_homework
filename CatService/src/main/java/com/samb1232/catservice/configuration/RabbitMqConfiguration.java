@@ -22,6 +22,9 @@ public class RabbitMqConfiguration {
     @Value("${app.rabbitmq.delete_cat_request_queue}")
     private String deleteCatRequestQueueName;
 
+    @Value("${app.rabbitmq.view_random_cat_request_queue}")
+    private String viewRandomCatRequestQueueName;
+
     @Bean
     public Queue addCatRequestQueue() {
         return new Queue(addCatRequestQueueName, true);
@@ -40,6 +43,11 @@ public class RabbitMqConfiguration {
     @Bean
     public Queue deleteCatRequestQueue() {
         return new Queue(deleteCatRequestQueueName, true);
+    }
+    
+    @Bean
+    public Queue viewRandomCatRequestQueue() {
+        return new Queue(viewRandomCatRequestQueueName, true);
     }
 
     @Bean

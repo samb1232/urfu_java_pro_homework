@@ -17,6 +17,8 @@ import com.samb1232.common.dto.DeleteCatMessage;
 import com.samb1232.common.dto.GetMyCatsMessage;
 import com.samb1232.common.dto.MyCatsResponse;
 import com.samb1232.common.dto.TGUser;
+import com.samb1232.common.dto.ViewRandomCatRequestMessage;
+import com.samb1232.common.dto.ViewRandomCatResponseMessage;
 
 @Service
 public class RabbitMqListenerService {
@@ -119,6 +121,43 @@ public class RabbitMqListenerService {
 
         } catch (Exception e) {
             LOGGER.error("Failed to process delete cat request: {}", message, e);
+        }
+    }
+
+    @RabbitListener(queues = "${app.rabbitmq.view_random_cat_request_queue}")
+    public void handleViewRandomCatRequest(String message) {
+        LOGGER.info("Received message from view random cat request queue: {}", message);
+
+        try {
+            ViewRandomCatRequestMessage viewRandomCatRequestMessage = objectMapper.readValue(message, ViewRandomCatRequestMessage.class);
+            Long userId = viewRandomCatRequestMessage.getUserId();
+
+            LOGGER.info("Processing ViewRandomCatRequest - userId: {}", userId);
+
+            dbService.getRandomCat().ifPresentOrElse(
+                cat -> {
+                    int likes = dbService.getLikesCount(cat.getCatId());
+                    int dislikes = dbService.getDislikesCount(cat.getCatId());
+
+                    ViewRandomCatResponseMessage response = new ViewRandomCatResponseMessage(
+                        userId,
+                        cat.getCatId(),
+                        cat.getName(),
+                        cat.getPhotoPath(),
+                        likes,
+                        dislikes
+                    );
+
+                    rabbitMqSenderService.sendToViewRandomCatResponseQueue(response);
+                    LOGGER.info("Successfully sent random cat (ID: {}) for user: {}", cat.getCatId(), userId);
+                },
+                () -> {
+                    LOGGER.warn("No cats available in database for user: {}", userId);
+                }
+            );
+
+        } catch (Exception e) {
+            LOGGER.error("Failed to process view random cat request: {}", message, e);
         }
     }
 }

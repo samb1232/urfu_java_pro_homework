@@ -125,4 +125,8 @@ public class DBService {
     public List<Cat> getCatsWithReactionsByUser(Long userId) {
         return catRepository.findByUserUserId(userId);
     }
+
+    public Optional<Cat> getRandomCat() {
+        return catRepository.findRandomCat();
+    }
 }

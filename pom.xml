@@ -23,5 +23,6 @@
         <module>common-dto</module>
         <module>CatService</module>
         <module>TelegramService</module>
+        <module>AdminService</module>
     </modules>
 </project>

@@ -57,6 +57,26 @@ services:
     networks:
       kittyBotNetwork:
 
+  adminservice:
+    build:
+      context: .
+      dockerfile: ./AdminService/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_started
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/catgram_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=your_password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+    networks:
+      kittyBotNetwork:
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:

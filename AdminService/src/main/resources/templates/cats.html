@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Cat Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; margin: 2rem; background: #fdfdfd; }
+        table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .photo { max-width: 100px; max-height: 100px; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 3px; }
+        .btn-delete:hover { background: #c0392b; }
+        .logout { margin-bottom: 1rem; text-align: right; }
+    </style>
+</head>
+<body>
+    <div class="logout">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
+
+    <h1>Cat Admin Panel</h1>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Owner ID</th>
+                <th>Cat Name</th>
+                <th>Photo Path</th>
+                <th>Reactions Count</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="cat : ${cats}">
+                <td th:text="${cat.catId}"></td>
+                <td th:text="${cat.user.userId}"></td>
+                <td th:text="${cat.name}"></td>
+                <td th:text="${cat.photoPath}"></td>
+                <td th:text="${#lists.size(cat.reactions)}"></td>
+                <td>
+                    <form th:action="@{/delete/{id}(id=${cat.catId})}" method="post" onsubmit="return confirm('Are you sure you want to delete this cat?');">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(cats)}">
+                <td colspan="6" style="text-align: center;">No cats found in the database.</td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

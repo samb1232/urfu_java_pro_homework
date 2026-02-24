@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head(${cat.catId == null ? 'Add New Cat' : 'Edit Cat'})}"></head>
+
+<body>
+    <header th:replace="~{fragments :: header}"></header>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card shadow-sm mt-3">
+                    <div class="card-header bg-primary text-white">
+                        <h4 class="mb-0" th:text="${cat.catId == null ? 'Create New Cat' : 'Edit Cat #'+cat.catId}">Cat
+                            Form</h4>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/cats/save}" th:object="${cat}" method="post">
+                            <!-- Hidden ID field for updates -->
+                            <input type="hidden" th:field="*{catId}" />
+
+                            <!-- Simulated Owner selection -->
+                            <div class="mb-3">
+                                <label for="user" class="form-label fw-bold">Owner User ID</label>
+                                <input type="number" class="form-control" id="user" name="user.userId"
+                                    th:value="*{user != null ? user.userId : ''}" placeholder="Enter valid User ID"
+                                    required>
+                                <div class="form-text">The User ID must exist in the users table.</div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">Cat's Name</label>
+                                <input type="text" class="form-control" id="name" th:field="*{name}"
+                                    placeholder="e.g. Fluffy" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="photoPath" class="form-label fw-bold">Photo Path / URL</label>
+                                <input type="text" class="form-control" id="photoPath" th:field="*{photoPath}"
+                                    placeholder="/app/photos/img.jpg" required>
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                                <a th:href="@{/cats}" class="btn btn-secondary">Cancel</a>
+                                <button type="submit" class="btn btn-success"
+                                    th:text="${cat.catId == null ? 'Save Cat' : 'Update Cat'}">Save</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments :: scripts}"></div>
+</body>
+
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Manage Cats - Admin Panel')}"></head>
+
+<body>
+    <header th:replace="~{fragments :: header}"></header>
+
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Manage Cats</h2>
+        </div>
+
+        <!-- Search Form -->
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body">
+                <form class="row g-3 align-items-center" th:action="@{/cats}" method="get">
+                    <div class="col-auto">
+                        <label for="searchName" class="col-form-label">Search by Name:</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" id="searchName" name="query" class="form-control" placeholder="Cat's name..."
+                            th:value="${query}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">Filter</button>
+                        <a th:href="@{/cats}" class="btn btn-outline-secondary">Clear</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="table-responsive bg-white shadow-sm rounded">
+            <table class="table table-hover table-striped mb-0 text-center align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Owner ID</th>
+                        <th>Name</th>
+                        <th>Photo Path</th>
+                        <th>Reactions</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="cat : ${cats}">
+                        <td th:text="${cat.catId}"></td>
+                        <td th:text="${cat.user != null ? cat.user.userId : 'N/A'}"></td>
+                        <td th:text="${cat.name}" class="fw-bold"></td>
+                        <td th:text="${cat.photoPath}"></td>
+                        <td>
+                            <span class="badge bg-info rounded-pill" th:text="${#lists.size(cat.reactions)}"></span>
+                        </td>
+                        <td>
+                            <a th:href="@{/cats/edit/{id}(id=${cat.catId})}"
+                                class="btn btn-sm btn-warning mb-1">Edit</a>
+                            <form th:action="@{/cats/delete/{id}(id=${cat.catId})}" method="post"
+                                style="display:inline;" onsubmit="return confirm('Delete this cat permanently?');">
+                                <button type="submit" class="btn btn-sm btn-danger mb-1">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(cats)}">
+                        <td colspan="6" class="text-muted py-4">No cats found. Try adjusting filters or add a new cat.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments :: scripts}"></div>
+</body>
+
+</html>

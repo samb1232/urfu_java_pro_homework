@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="~{fragments :: head('Dashboard - Cat Admin Panel')}"></head>
+
+<body>
+    <header th:replace="~{fragments :: header}"></header>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="mb-4">Dashboard</h1>
+                <p class="lead">Welcome to the Administration Panel. Manage users' cats, review activities, and control
+                    the database.</p>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Cats Database</h5>
+                        <p class="card-text">View, edit, delete and search for cats uploaded by users.</p>
+                        <a th:href="@{/cats}" class="btn btn-primary">Go to Cats list</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments :: scripts}"></div>
+</body>
+
+</html>

@@ -41,11 +41,13 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
         rabbitMqService.sendToViewRandomCatQueue(payload);
         LOGGER.info("Sent view random cat request for user: {}", userId);
     }
-    
+
     @Override
     public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
         if (updateInfo.hasUserCallback()) {
             processCallbackQuery(updateInfo.getUserCallback(), stateMachine);
+        } else if (updateInfo.hasUserMessage()) {
+            processUnknownMessage(updateInfo.getUserMessage(), stateMachine);
         }
     }
 
@@ -93,9 +95,9 @@ public class ViewCatsHandler extends UnknownCallbackQueryHandler implements Upda
     private void sendCatReaction(Long userId, Long catId, String action) {
         SetCatReactionMessage reactionMessage = new SetCatReactionMessage(userId, catId, action);
         String payload = String.format("{\"userId\":%d,\"catId\":%d,\"action\":\"%s\"}",
-            reactionMessage.getUserId(),
-            reactionMessage.getCatId(),
-            reactionMessage.getAction());
+                reactionMessage.getUserId(),
+                reactionMessage.getCatId(),
+                reactionMessage.getAction());
         rabbitMqService.sendToSetCatReactionQueue(payload);
         LOGGER.info("Sent cat reaction: user={}, cat={}, action={}", userId, catId, action);
     }

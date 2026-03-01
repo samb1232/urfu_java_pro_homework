@@ -29,7 +29,8 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
     private final CatCacheService catCacheService;
     private final FileStorageService fileStorageService;
 
-    public MyCatsHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService, CatCacheService catCacheService, FileStorageService fileStorageService) {
+    public MyCatsHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService,
+            CatCacheService catCacheService, FileStorageService fileStorageService) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
         this.rabbitMqService = rabbitMqService;
@@ -44,13 +45,10 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
 
     @Override
     public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
-        // Send request to get user's cats when entering MY_CATS state
-        Long userId = null;
         if (updateInfo.hasUserCallback()) {
-            userId = updateInfo.getUserCallback().getChatId();
             processCallbackQuery(updateInfo.getUserCallback(), stateMachine);
-        } else if (updateInfo.hasUserMessage() && updateInfo.getUserMessage().getTGUser() != null) {
-            userId = updateInfo.getUserMessage().getTGUser().getId();
+        } else if (updateInfo.hasUserMessage()) {
+            processUnknownMessage(updateInfo.getUserMessage(), stateMachine);
         }
     }
 
@@ -91,13 +89,12 @@ public class MyCatsHandler extends UnknownCallbackQueryHandler implements Update
         }
 
         String caption = String.format(
-            "🐱 %s\n\n" +
-            "👍: %d\n" +
-            "👎: %d",
-            cat.getName(),
-            cat.getLikes(),
-            cat.getDislikes()
-        );
+                "🐱 %s\n\n" +
+                        "👍: %d\n" +
+                        "👎: %d",
+                cat.getName(),
+                cat.getLikes(),
+                cat.getDislikes());
 
         try {
             byte[] photoBytes = fileStorageService.readPhoto(cat.getPhotoPath());

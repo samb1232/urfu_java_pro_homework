@@ -24,11 +24,10 @@ public class MainMenuHandler extends UnknownCallbackQueryHandler implements Upda
     private final ViewCatsHandler viewCatsHandler;
 
     public MainMenuHandler(
-        TelegramApiService telegramApiService, 
-        AddCatHandler addCatHandler,
-        MyCatsHandler myCatsHandler,
-        ViewCatsHandler viewCatsHandler
-    ) {
+            TelegramApiService telegramApiService,
+            AddCatHandler addCatHandler,
+            MyCatsHandler myCatsHandler,
+            ViewCatsHandler viewCatsHandler) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
         this.addCatHandler = addCatHandler;
@@ -40,6 +39,8 @@ public class MainMenuHandler extends UnknownCallbackQueryHandler implements Upda
     public void handle(UpdateInfo updateInfo, StateMachine<BotState, BotEvent> stateMachine) {
         if (updateInfo.hasUserCallback()) {
             processCallbackQuery(updateInfo.getUserCallback(), stateMachine);
+        } else if (updateInfo.hasUserMessage()) {
+            processUnknownMessage(updateInfo.getUserMessage(), stateMachine);
         }
     }
 

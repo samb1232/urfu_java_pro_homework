@@ -33,7 +33,8 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
     private final Map<Long, Boolean> waitingForNameByChatId = new ConcurrentHashMap<>();
     private final Map<Long, String> photoPathByChatId = new ConcurrentHashMap<>();
 
-    public AddCatHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService, FileStorageService fileStorageService) {
+    public AddCatHandler(TelegramApiService telegramApiService, RabbitMqService rabbitMqService,
+            FileStorageService fileStorageService) {
         super(telegramApiService);
         this.telegramApiService = telegramApiService;
         this.rabbitMqService = rabbitMqService;
@@ -42,10 +43,9 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
 
     public void onStart(Long chatId) {
         telegramApiService.sendMessageWithKeyboard(
-            chatId,
-            TextFields.ADD_CAT_SEND_PHOTO_TEXT,
-            KeyboardFactory.createBackToMainMenuKeyboard()
-        );
+                chatId,
+                TextFields.ADD_CAT_SEND_PHOTO_TEXT,
+                KeyboardFactory.createBackToMainMenuKeyboard());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
             return;
         }
         if (updateInfo.hasUserMessage()) {
-            processMessage(updateInfo.getUserMessage());
+            processMessage(updateInfo.getUserMessage(), stateMachine);
         }
     }
 
@@ -77,14 +77,15 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
         telegramApiService.answerCallbackQuery(callbackQuery.getCallbackId());
     }
 
-    private void processMessage(UserMessage userMessage) {
+    private void processMessage(UserMessage userMessage, StateMachine<BotState, BotEvent> stateMachine) {
         Long chatId = userMessage.getChatId();
         boolean waitingForName = waitingForNameByChatId.getOrDefault(chatId, Boolean.FALSE);
 
         if (!waitingForName) {
             if (userMessage.getPhotoFileId() == null) {
-                telegramApiService.sendMessageWithKeyboard(chatId, "Пожалуйста, отправьте фото кота.",
-                        KeyboardFactory.createBackToMainMenuKeyboard());
+                waitingForNameByChatId.remove(chatId);
+                photoPathByChatId.remove(chatId);
+                processUnknownMessage(userMessage, stateMachine);
                 return;
             }
 
@@ -133,9 +134,10 @@ public class AddCatHandler extends UnknownCallbackQueryHandler implements Update
             return;
         }
 
-        // If invalid input, re-ask
-        telegramApiService.sendMessageWithKeyboard(chatId, TextFields.ADD_CAT_PHOTO_RECEIVED_TEXT,
-                KeyboardFactory.createBackToMainMenuKeyboard());
+        // If invalid input, return to main menu
+        waitingForNameByChatId.remove(chatId);
+        photoPathByChatId.remove(chatId);
+        processUnknownMessage(userMessage, stateMachine);
     }
 
 }

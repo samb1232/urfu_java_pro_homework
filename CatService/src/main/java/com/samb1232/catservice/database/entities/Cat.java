@@ -37,7 +37,9 @@ public class Cat {
     @OneToMany(mappedBy = "cat", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CatReaction> reactions = new ArrayList<>();
 
-    
+    @OneToMany(mappedBy = "cat", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ViewedCat> viewedCats = new ArrayList<>();
+
     public Long getCatId() {
         return catId;
     }
@@ -72,5 +74,9 @@ public class Cat {
 
     public List<CatReaction> getReactions() {
         return reactions;
+    }
+
+    public List<ViewedCat> getViewedCats() {
+        return viewedCats;
     }
 }
